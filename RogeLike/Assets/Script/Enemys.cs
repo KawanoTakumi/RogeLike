@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class Enemys : MonoBehaviour
 {
     public CharacterStatus Status;
+    public CharacterStatus EnemyStatus;
     private Transform player;
     private GameObject Player;
     private int currentHP = 0;
@@ -14,6 +15,9 @@ public class Enemys : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        EnemyStatus = Instantiate(Status);
+        EnemyStatus.HP = EnemyStatus.maxHP;//念のためHPを初期化
+        Debug.Log("HP" + EnemyStatus.HP);
         tilemaps = Tile.Save_maps;
 
         if (Player == null)
@@ -55,7 +59,7 @@ public class Enemys : MonoBehaviour
     bool CanSeePlayer()
     {
         float distance = Vector2.Distance(transform.position, player.transform.position);
-        return distance <= Status.searchRange;
+        return distance <= EnemyStatus.searchRange;
     }
 
     bool IsWalkableTile(TileBase tile)
@@ -67,7 +71,6 @@ public class Enemys : MonoBehaviour
     public void ExecuteTurn()
     {
         if (!Enemy_Moving) return;
-        Debug.Log("敵の行動中");
         Enemy_Moving = false; // 行動開始と同時にOFF
         StartCoroutine(DoAction());
     }
@@ -83,7 +86,7 @@ public class Enemys : MonoBehaviour
         // プレイヤーの周囲1マス以内なら移動しない
         if (dx <= 1 && dy <= 1)
         {
-            yield return new WaitForSeconds(0.2f); // 演出用待機
+            yield return new WaitForSeconds(0.1f); // 演出用待機
             yield break;
         }
 
@@ -110,4 +113,25 @@ public class Enemys : MonoBehaviour
         }
         yield return new WaitForSeconds(0f); // 演出用の待機
     }
+
+    public void TakeDamage(int damage)
+    {
+        Debug.Log("攻撃前の体力" + EnemyStatus.HP);
+        EnemyStatus.HP -= damage;
+        EnemyStatus.HP = Mathf.Max(EnemyStatus.HP, 0);
+        Debug.Log("敵の体力" + EnemyStatus.HP);
+
+        if (EnemyStatus.HP <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"{gameObject.name} は死亡しました");
+        Tile.allEnemys.Remove(this); // リストから削除
+        Destroy(gameObject);
+    }
+
 }

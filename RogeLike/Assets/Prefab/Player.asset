@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34f2548d41ffa5a4e85934e5dcd08c23, type: 3}
-  m_Name: Enemy01
+  m_Name: Player
   m_EditorClassIdentifier: 
-  charaName: None
-  maxHP: 3
-  HP: 3
+  charaName: Player
+  maxHP: 30
+  HP: 30
   attack: 2
-  diffence: 0
-  attackRange: 1
-  searchRange: 1
-  exp: 2
+  diffence: 5
+  attackRange: 2
+  searchRange: 0
+  exp: 0

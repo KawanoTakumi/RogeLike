@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -16,9 +17,8 @@ public class Tile : MonoBehaviour
     public int roomMaxSize = 12;//部屋の最大の大きさ
 
     private List<Room> rooms = new();
+    public static List<Enemys> allEnemys = new();
     public static Tilemap Save_maps;
-
-
     void Start()
     {
         Save_maps = tilemap;
@@ -27,24 +27,28 @@ public class Tile : MonoBehaviour
         ConnectRooms();
         DrawWalls();
         CenterCameraOnFirstRoom();
+
         //カメラの位置にプレイヤーを生成
         Vector3 cameraPos = Camera.main.transform.position;
         Vector3Int gridPos = tilemap.WorldToCell(cameraPos);
         Vector3 spawnWorldPos = tilemap.CellToWorld(gridPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
-
         Instantiate(playerPrefab, spawnWorldPos, Quaternion.identity);
-        Room selectedRoom = rooms[Random.Range(0, rooms.Count)];//次の階層に行ける部屋を作成
+
+
+
         //部屋のどこかに次の階層へのタイルを配置
+        Room selectedRoom = rooms[Random.Range(0, rooms.Count)];//次の階層に行ける部屋を作成
         Vector2Int center = selectedRoom.Center;
         Vector3Int cellPos = new Vector3Int(center.x, center.y,0);
         tilemap.SetTile(cellPos, stairsTile);
-        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
+        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.0f, 0.0f, 0); // 中央に補正
         Instantiate(Exit_Obj, ExitWorldPos, Quaternion.identity);
         Exit.exitCell = ExitWorldPos;
+
+        //各部屋に敵を生成
         SpawnEnemies(rooms);
 
     }
-
 
     //部屋生成スクリプト
     void GenerateRooms()
@@ -153,14 +157,13 @@ public class Tile : MonoBehaviour
                     Random.Range(room.rect.x + 1, room.rect.x + room.rect.width - 1),
                     Random.Range(room.rect.y + 1, room.rect.y + room.rect.height - 1)
                 );
-
-                Vector2Int center = room.Center;
-
+                //座標をタイル座標に設定、生成
                 Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(randomPos.x, randomPos.y, 0)) + new Vector3(0.5f, 0.5f, 0);
-                Instantiate(enemyPrefab[enemyIndex], worldPos, Quaternion.identity);
-
+                GameObject Enmey = Instantiate(enemyPrefab[enemyIndex], worldPos, Quaternion.identity);
+                allEnemys.Add(Enmey.GetComponent<Enemys>());
             }
         }
+
     }
 
     //部屋のクラスを設定
@@ -182,4 +185,5 @@ public class Tile : MonoBehaviour
                    pos.y >= Y && pos.y < Y + Height;
         }
     }
+
 }

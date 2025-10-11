@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
@@ -14,7 +15,17 @@ public class Exit : MonoBehaviour
             isOnExit = true;
         }
     }
-
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                LoadNextMap();
+                Tile.allEnemys.Clear();
+            }
+        }
+    }
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -26,9 +37,10 @@ public class Exit : MonoBehaviour
     void Update()
     {
         Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        if (playerCell == exitCell && Input.GetKeyDown(KeyCode.E))
+        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
         {
             LoadNextMap();
+            Tile.allEnemys.Clear();
         }
     }
 

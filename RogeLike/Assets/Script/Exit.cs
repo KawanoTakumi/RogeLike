@@ -5,16 +5,8 @@ using UnityEngine.Tilemaps;
 
 public class Exit : MonoBehaviour
 {
-    private bool isOnExit = false;
     public static Vector3 exitCell;
     public static Vector3 playerPos;
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isOnExit = true;
-        }
-    }
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -26,22 +18,14 @@ public class Exit : MonoBehaviour
             }
         }
     }
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isOnExit = false;
-        }
-    }
-
     void Update()
     {
-        Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            LoadNextMap();
-            Tile.allEnemys.Clear();
-        }
+        //Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        //if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
+        //{
+        //    LoadNextMap();
+        //    Tile.allEnemys.Clear();
+        //}
     }
 
     void LoadNextMap()

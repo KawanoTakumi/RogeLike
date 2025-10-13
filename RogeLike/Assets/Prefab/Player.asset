@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Player
   m_EditorClassIdentifier: 
   charaName: Player
-  maxHP: 30
-  HP: 30
+  maxHP: 100
+  HP: 0
   attack: 2
   diffence: 5
-  attackRange: 2
+  attackRange: 1
   searchRange: 0
   exp: 0

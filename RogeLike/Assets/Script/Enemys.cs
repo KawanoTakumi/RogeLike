@@ -5,19 +5,20 @@ using UnityEngine.Tilemaps;
 
 public class Enemys : MonoBehaviour
 {
-    public CharacterStatus Status;
-    public CharacterStatus EnemyStatus;
+    public CharacterStatus Status;//ステータス読み込み用
+    public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
+    private CharacterStatus EnemyStatus;//個別ステータスに置きかえ
     private Transform player;
     private GameObject Player;
-    private int currentHP = 0;
-    private Tilemap tilemaps;
-    public bool Enemy_Moving = false;
+    private Tilemap tilemaps; 
+    private BattleLog Log;
+    private PlayerControl p_control;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        EnemyStatus = Instantiate(Status);
+        EnemyStatus = Instantiate(Status);//個別のステータスに置き換えする
         EnemyStatus.HP = EnemyStatus.maxHP;//念のためHPを初期化
-        Debug.Log("HP" + EnemyStatus.HP);
+        Log = GameObject.Find("BattleLog").GetComponent<BattleLog>();
         tilemaps = Tile.Save_maps;
 
         if (Player == null)
@@ -83,11 +84,11 @@ public class Enemys : MonoBehaviour
         int dx = Mathf.Abs(enemyCell.x - playerCell.x);
         int dy = Mathf.Abs(enemyCell.y - playerCell.y);
 
-        // プレイヤーの周囲1マス以内なら移動しない
         if (dx <= 1 && dy <= 1)
         {
-            yield return new WaitForSeconds(0.1f); // 演出用待機
-            yield break;
+            AttackPlayer();
+            yield return new WaitForSeconds(0.2f);
+            yield break; // 攻撃したら移動しない
         }
 
         // それ以外なら移動処理
@@ -111,15 +112,13 @@ public class Enemys : MonoBehaviour
             Vector3 targetWorld = tilemaps.CellToWorld(targetCell) + new Vector3(0.5f, 0.5f, 0);
             transform.position = targetWorld;
         }
-        yield return new WaitForSeconds(0f); // 演出用の待機
+        yield return new WaitForSeconds(0.05f); // 演出用の待機
     }
 
     public void TakeDamage(int damage)
     {
-        Debug.Log("攻撃前の体力" + EnemyStatus.HP);
         EnemyStatus.HP -= damage;
         EnemyStatus.HP = Mathf.Max(EnemyStatus.HP, 0);
-        Debug.Log("敵の体力" + EnemyStatus.HP);
 
         if (EnemyStatus.HP <= 0)
         {
@@ -129,9 +128,24 @@ public class Enemys : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log($"{gameObject.name} は死亡しました");
+        Log.ShowMessage($"{EnemyStatus.charaName} to die");
+
         Tile.allEnemys.Remove(this); // リストから削除
         Destroy(gameObject);
     }
+    private void AttackPlayer()
+    {
+        p_control = Player.GetComponent<PlayerControl>();
+        int damage = Mathf.Max(Status.attack - PlayerControl.p_status.diffence, 1);
+        PlayerControl.p_status.HP -= damage;
+        PlayerControl.p_status.HP = Mathf.Max(PlayerControl.p_status.HP, 0);
+        p_control.UpdateHPValue();
+        if (Log != null)
+        Log.ShowMessage($" player hit to{damage} damage");
 
+        if (PlayerControl.p_status.HP <= 0)
+        {
+            Debug.Log("プレイヤー死亡");
+        }
+    }
 }

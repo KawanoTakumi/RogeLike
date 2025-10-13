@@ -16,7 +16,7 @@ MonoBehaviour:
   maxHP: 10
   HP: 10
   attack: 4
-  diffence: 2
+  diffence: 1
   attackRange: 1
   searchRange: 2
   exp: 5

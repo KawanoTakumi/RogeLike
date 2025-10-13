@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -13,11 +14,14 @@ public class PlayerControl : MonoBehaviour
     private Move inputActions;
     public static bool Player_Moving = false;
     public CharacterStatus PlayerStatus;
+    private Slider PlayerHPBar;//プレイヤー体力バー
 
     private List<Enemys> nearbyEnemies = new();
+    public static CharacterStatus p_status;//個別のステータスに変更
     private int currentTargetIndex = 0;
     private Enemys currentTarget = null;
-
+    private BattleLog Log;
+    private Text HP_Text;//体力表示
     void Awake()
     {
         inputActions = new Move();
@@ -26,9 +30,17 @@ public class PlayerControl : MonoBehaviour
     private void Start()
     {
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        p_status = Instantiate(PlayerStatus);
         //タイルマップを読み込む
         tilemap = Tile.Save_maps;
+        Log = GameObject.Find("BattleLog").GetComponent<BattleLog>();
         Player_Moving = true;
+        PlayerHPBar = GameObject.Find("HP").GetComponent<Slider>();
+        HP_Text = GameObject.Find("HP_Text").GetComponent<Text>();
+        p_status.HP = p_status.maxHP;
+        PlayerHPBar.maxValue = p_status.maxHP;
+        PlayerHPBar.value = p_status.HP;
+        HP_Text.text = p_status.HP + "/" + p_status.maxHP;
     }
 
     void OnEnable() => inputActions.Enable();
@@ -47,19 +59,23 @@ public class PlayerControl : MonoBehaviour
             }
             else
             {
-                Debug.Log("敵が見つかりません");
+                Log.ShowMessage($"no hit enemys !");
             }
         }
         if (Keyboard.current.spaceKey.wasPressedThisFrame && currentTarget != null)
         {
 
-            int damage = Mathf.Max(PlayerStatus.attack - currentTarget.Status.diffence, 1);
+            int damage = Mathf.Max(p_status.attack - currentTarget.Status.diffence, 1);
             currentTarget.TakeDamage(damage);
-
-            Debug.Log($"プレイヤーが {currentTarget.name} に {damage} ダメージを与えた");
+            //ログ追加
+            Log.ShowMessage($" {currentTarget.name} hit {damage} damage");
             moveInput = Vector2.zero;
 
             Player_Moving = false;
+            foreach (var enemy in Tile.allEnemys)
+            {
+                enemy.Enemy_Moving = true;
+            }
             StartCoroutine(EnemyTurnRoutine());
         }
 
@@ -79,6 +95,12 @@ public class PlayerControl : MonoBehaviour
             if (targetTile != null && IsWalkableTile(targetTile) && !IsEnemyOnTarget(targetCell))
             {
                 transform.position = targetWorld;
+                //移動したら自然回復、ターンごとに１回復
+                if(p_status.HP < p_status.maxHP)
+                {
+                    p_status.HP++;
+                    UpdateHPValue();
+                }
                 Exit.playerPos = transform.position;
                 lastMoveTime = Time.time;
                 moveInput = Vector2.zero;
@@ -87,9 +109,8 @@ public class PlayerControl : MonoBehaviour
                 foreach (var enemy in Tile.allEnemys)
                 {
                     enemy.Enemy_Moving = true;
-                    StartCoroutine(EnemyTurnRoutine());
                 }
-
+                StartCoroutine(EnemyTurnRoutine());
             }
         }
     }
@@ -113,10 +134,12 @@ public class PlayerControl : MonoBehaviour
     //敵の行動に移行させる
     public IEnumerator EnemyTurnRoutine()
     {
+        List<Enemys> enemiesCopy = new List<Enemys>(Tile.allEnemys);
 
-        foreach (var enemy in Tile.allEnemys)
+        for (int i = 0; i < enemiesCopy.Count; i++)
         {
-            enemy.ExecuteTurn();
+            if (enemiesCopy[i] == null) continue;
+            enemiesCopy[i].ExecuteTurn();
             yield return new WaitForSeconds(0f);
         }
         Player_Moving = true;
@@ -127,6 +150,7 @@ public class PlayerControl : MonoBehaviour
         // 通行可能なTileだけを許可（例：FloorTile, PathTileなど）
         return tile.name == "Tile 001_0"|| tile.name == "Exit_0";
     }
+    //周辺にいる敵を検知
     private void UpdateNearbyEnemies()
     {
         nearbyEnemies.Clear();
@@ -138,12 +162,13 @@ public class PlayerControl : MonoBehaviour
             int dx = Mathf.Abs(playerCell.x - enemyCell.x);
             int dy = Mathf.Abs(playerCell.y - enemyCell.y);
 
-            if (dx <= PlayerStatus.attackRange && dy <= PlayerStatus.attackRange)
+            if (dx <= p_status.attackRange && dy <= p_status.attackRange)
             {
                 nearbyEnemies.Add(enemy);
             }
         }
     }
+    //ロックオン中の敵の色を赤くする
     private void HighlightTarget(Enemys target)
     {
         foreach (var enemy in nearbyEnemies)
@@ -153,5 +178,10 @@ public class PlayerControl : MonoBehaviour
 
         target.GetComponent<SpriteRenderer>().color = Color.red;
     }
-
+    //プレイヤーの体力表示更新
+    public void UpdateHPValue()
+    {
+        PlayerHPBar.value = p_status.HP;
+        HP_Text.text = p_status.HP + "/" + p_status.maxHP;
+    }
 }

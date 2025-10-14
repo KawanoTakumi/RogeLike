@@ -15,7 +15,7 @@ MonoBehaviour:
   charaName: Robot
   maxHP: 10
   HP: 10
-  attack: 4
+  attack: 3
   diffence: 1
   attackRange: 1
   searchRange: 2

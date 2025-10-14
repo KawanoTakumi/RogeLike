@@ -9,18 +9,19 @@ public class Exit : MonoBehaviour
     public static Vector3 playerPos;
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            if(Input.GetKeyDown(KeyCode.E))
-            {
-                LoadNextMap();
-                Tile.allEnemys.Clear();
-            }
+            LoadNextMap();
+            Tile.allEnemys.Clear();
         }
     }
     void Update()
     {
-        Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        
+        Vector3 playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        playerCell.x += 0.5f;
+        playerCell.y += 0.5f;
         if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
         {
             LoadNextMap();

@@ -20,27 +20,12 @@ public class Exit : MonoBehaviour
     }
     void Update()
     {
-<<<<<<< HEAD
         Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        if (playerCell == exitCell && Input.GetKeyDown(KeyCode.E))
+        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
         {
             LoadNextMap();
+            Tile.allEnemys.Clear();
         }
-        Debug.Log(playerCell + "プレイヤー" + exitCell + "ゴール");
-
-        if(playerCell == exitCell)
-        {
-            Debug.Log("ゴールとかぶっています");
-        }
-
-=======
-        //Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        //if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
-        //{
-        //    LoadNextMap();
-        //    Tile.allEnemys.Clear();
-        //}
->>>>>>> 6af5d67ab20c2ecc9d41dc2304ce09a43b25cfc3
     }
 
     void LoadNextMap()

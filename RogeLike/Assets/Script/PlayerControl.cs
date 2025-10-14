@@ -78,8 +78,6 @@ public class PlayerControl : MonoBehaviour
             }
             StartCoroutine(EnemyTurnRoutine());
         }
-<<<<<<< HEAD
-=======
 
         //ˆÚ“®‚ğ§Œä
         if (Time.time - lastMoveTime < moveCooldown || moveInput == Vector2.zero) return;
@@ -131,7 +129,6 @@ public class PlayerControl : MonoBehaviour
             }
         }
         return false;
->>>>>>> 6af5d67ab20c2ecc9d41dc2304ce09a43b25cfc3
     }
 
     //“G‚Ìs“®‚ÉˆÚs‚³‚¹‚é

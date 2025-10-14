@@ -41,11 +41,7 @@ public class Tile : MonoBehaviour
         Vector2Int center = selectedRoom.Center;
         Vector3Int cellPos = new Vector3Int(center.x, center.y,0);
         tilemap.SetTile(cellPos, stairsTile);
-<<<<<<< HEAD
-        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0, 0, 0); // ’†‰›‚É•â³
-=======
         Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.0f, 0.0f, 0); // ’†‰›‚É•â³
->>>>>>> 6af5d67ab20c2ecc9d41dc2304ce09a43b25cfc3
         Instantiate(Exit_Obj, ExitWorldPos, Quaternion.identity);
         Exit.exitCell = ExitWorldPos;
 

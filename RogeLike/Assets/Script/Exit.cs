@@ -20,12 +20,12 @@ public class Exit : MonoBehaviour
     }
     void Update()
     {
-        //Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        //if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
-        //{
-        //    LoadNextMap();
-        //    Tile.allEnemys.Clear();
-        //}
+        Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            LoadNextMap();
+            Tile.allEnemys.Clear();
+        }
     }
 
     void LoadNextMap()

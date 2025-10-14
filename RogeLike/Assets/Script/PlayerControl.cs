@@ -49,7 +49,6 @@ public class PlayerControl : MonoBehaviour
             lastMoveTime = Time.time;
             moveInput = Vector2.zero;
         }
-
     }
 
     bool IsWalkableTile(TileBase tile)

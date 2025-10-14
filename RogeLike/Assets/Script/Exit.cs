@@ -30,6 +30,13 @@ public class Exit : MonoBehaviour
         {
             LoadNextMap();
         }
+        Debug.Log(playerCell + "プレイヤー" + exitCell + "ゴール");
+
+        if(playerCell == exitCell)
+        {
+            Debug.Log("ゴールとかぶっています");
+        }
+
     }
 
     void LoadNextMap()

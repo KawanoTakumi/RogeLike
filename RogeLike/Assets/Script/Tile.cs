@@ -38,7 +38,7 @@ public class Tile : MonoBehaviour
         Vector2Int center = selectedRoom.Center;
         Vector3Int cellPos = new Vector3Int(center.x, center.y,0);
         tilemap.SetTile(cellPos, stairsTile);
-        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0); // íÜâõÇ…ï‚ê≥
+        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0, 0, 0); // íÜâõÇ…ï‚ê≥
         Instantiate(Exit_Obj, ExitWorldPos, Quaternion.identity);
         Exit.exitCell = ExitWorldPos;
         SpawnEnemies(rooms);

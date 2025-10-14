@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34f2548d41ffa5a4e85934e5dcd08c23, type: 3}
   m_Name: Enemy01
   m_EditorClassIdentifier: 
-  charaName: None
-  maxHP: 1
-  attack: 1
-  diffence: 1
-  searchRange: 0
-  exp: 1
+  charaName: Rat
+  maxHP: 3
+  HP: 3
+  attack: 2
+  diffence: 0
+  attackRange: 1
+  searchRange: 1
+  exp: 2

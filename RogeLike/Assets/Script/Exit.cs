@@ -1,30 +1,26 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class Exit : MonoBehaviour
 {
-    private bool isOnExit = false;
     public static Vector3 exitCell;
     public static Vector3 playerPos;
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.CompareTag("Player"))
         {
-            isOnExit = true;
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                LoadNextMap();
+                Tile.allEnemys.Clear();
+            }
         }
     }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isOnExit = false;
-        }
-    }
-
     void Update()
     {
+<<<<<<< HEAD
         Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
         if (playerCell == exitCell && Input.GetKeyDown(KeyCode.E))
         {
@@ -37,6 +33,14 @@ public class Exit : MonoBehaviour
             Debug.Log("ƒS[ƒ‹‚Æ‚©‚Ô‚Á‚Ä‚¢‚Ü‚·");
         }
 
+=======
+        //Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        //if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
+        //{
+        //    LoadNextMap();
+        //    Tile.allEnemys.Clear();
+        //}
+>>>>>>> 6af5d67ab20c2ecc9d41dc2304ce09a43b25cfc3
     }
 
     void LoadNextMap()

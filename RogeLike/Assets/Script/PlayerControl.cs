@@ -62,6 +62,12 @@ public class PlayerControl : MonoBehaviour
 
         UpdateNearbyEnemies();
 
+        //デバッグ:ステータスリセット
+        if(Keyboard.current.lKey.wasPressedThisFrame)
+        {
+            StatusReset();
+        }
+
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             if (nearbyEnemies.Count > 0)
@@ -95,6 +101,12 @@ public class PlayerControl : MonoBehaviour
         //移動を制御
         if (Time.time - lastMoveTime < moveCooldown || moveInput == Vector2.zero) return;
 
+        if (moveInput.x != 0 && moveInput.y != 0)
+        {
+            // どちらか一方向だけを優先（例：X方向を優先）
+            moveInput = new Vector2(moveInput.x, 0);
+            // moveInput = new Vector2(0, moveInput.y);
+        }
 
         if (Player_Moving)
         {
@@ -196,36 +208,76 @@ public class PlayerControl : MonoBehaviour
     //プレイヤーの体力表示更新
     public void UpdateHPValue()
     {
+        PlayerHPBar.maxValue = p_status.maxHP;
         PlayerHPBar.value = p_status.HP;
         HP_Text.text = p_status.HP + "/" + p_status.maxHP;
     }
     //経験値獲得
     public void Exp_gain(int exp)
     {
-        p_status.exp += exp;
-        if(p_status.exp > max_exp)
+        p_status.level_exp += exp;
+        if(p_status.level_exp > max_exp)
         {
             LevelUp();
         }
     }
+    //アイテム取得関数
+    public void GetItemValue(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                {
+                    if (p_status.HP < p_status.maxHP - 5)
+                        p_status.HP += 5;
+                }break;
+            case 1: 
+                {
+                    p_status.attack += 2;
+                } break;
+            case 2: 
+               { 
+                p_status.diffence += 2;
+                } break;
+        }
+    }
+
     //レベルアップ
     void LevelUp()
     {
         //レベル増加
         p_status.level++;
         p_status.level_exp = 0;
-        max_exp = p_status.level * 5;
+        max_exp = p_status.level *15;
 
         //ステータスを増加させる
         p_status.attack     += 2;
         p_status.diffence   += 1;
         p_status.maxHP      += 5;
         p_status.HP = p_status.maxHP;
-        PlayerStatus = p_status;
+
+        //表示を設定
+        PlayerHPBar.maxValue = p_status.maxHP;
+        PlayerHPBar.value = p_status.HP;
+
         //レベルが３以上なら攻撃範囲を+１する
-        if(p_status.level > 3)
+        if (p_status.level > 3)
         {
             p_status.attackRange = 2;
         }
+    }
+    //デバッグ用、ゲームオーバー時ステータス初期化
+    void StatusReset()
+    {
+        PlayerStatus.level = 1;
+        PlayerStatus.maxHP = 100;
+        PlayerStatus.HP = PlayerStatus.maxHP;
+        PlayerStatus.attack = 5;
+        PlayerStatus.diffence = 5;
+        PlayerStatus.searchRange = 1;
+        PlayerStatus.level_exp = 0;
+        PlayerStatus.exp = 0;
+        p_status = PlayerStatus;
+        UpdateHPValue();
     }
 }

@@ -9,7 +9,7 @@ public class Exit : MonoBehaviour
 {
     public static Vector3 exitCell;
     public static Vector3 playerPos;
-    public static int Now_Floor= 4;
+    public static int Now_Floor= 1;
     GameObject FText;
     TextMeshProUGUI Floor_Text;
 

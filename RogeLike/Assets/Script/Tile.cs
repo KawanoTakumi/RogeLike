@@ -12,8 +12,10 @@ public class Tile : MonoBehaviour
     public GameObject playerPrefab;//プレイヤー
     public GameObject[] enemyPrefab;//敵
     public GameObject[] bossPrefab;//ボス
+    public GameObject[] itemPrefab;//アイテム
     public GameObject Exit_Obj;//階段
-    public static int MAP_SIZE = 40;//マップの大きさ(縦横同比率)
+    public int mapSize = 40;
+    public static int MAP_SIZE = 0;//マップの大きさ(縦横同比率)
     public int roomCount = 4;//部屋の数
     public int roomMinSize = 6;//部屋の最小の大きさ
     public int roomMaxSize = 12;//部屋の最大の大きさ
@@ -21,11 +23,14 @@ public class Tile : MonoBehaviour
     private List<Room> rooms = new();
     public static List<Enemys> allEnemys = new();
     public static Tilemap Save_maps;
+    const int MAX_FLOOR = 5;
     void Start()
     {
+        //マップの大きさを設定
+        MAP_SIZE = mapSize;
         Save_maps = tilemap;
         //マップを生成
-        if(Exit.Now_Floor < 5)
+        if(Exit.Now_Floor < MAX_FLOOR)
         {
             GenerateRooms();
             ConnectRooms();
@@ -41,6 +46,8 @@ public class Tile : MonoBehaviour
 
             //各部屋に敵を生成
             SpawnEnemies(rooms);
+            //各部屋にアイテム生成
+            SpawnItems(rooms);
         }
         else
         {
@@ -235,4 +242,30 @@ public class Tile : MonoBehaviour
         GameObject boss = Instantiate(bossPrefab[0], worldPos, Quaternion.identity);
         allEnemys.Add(boss.GetComponent<Enemys>());
     }
+
+    //アイテム生成関数
+    void SpawnItems(List<Room> rooms)
+    {
+        foreach (Room room in rooms)
+        {
+            for (int x = room.rect.xMin + 1; x < room.rect.xMax - 1; x++)
+            {
+                for (int y = room.rect.yMin + 1; y < room.rect.yMax - 1; y++)
+                {
+                    // 1/30の確率でアイテムを生成
+                    if (Random.Range(0, 30) == 0)
+                    {
+                        Vector3Int cellPos = new Vector3Int(x, y, 0);
+                        if (tilemap.GetTile(cellPos) == floorTile)
+                        {
+                            GameObject item = itemPrefab[Random.Range(0, itemPrefab.Length)];
+                            Vector3 worldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0);
+                            Instantiate(item, worldPos, Quaternion.identity);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

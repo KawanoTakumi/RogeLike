@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2290468284397897602}
   - component: {fileID: 4629418242662988468}
   - component: {fileID: 4992476027864843831}
+  - component: {fileID: 2882366464164153242}
   m_Layer: 0
   m_Name: Enemy01
   m_TagString: Untagged
@@ -19,21 +20,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4486364948397702972
-Transform:
+--- !u!224 &4486364948397702972
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6619115775614577652}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.46273, y: 53.508022, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 39.46273, y: 53.508022}
+  m_SizeDelta: {x: 0.88863635, y: 0.94772726}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &2290468284397897602
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -102,6 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Status: {fileID: 11400000, guid: 963a68b7d8ee0ff419dea4fa49e674d8, type: 2}
+  Enemy_Moving: 0
 --- !u!61 &4992476027864843831
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -148,3 +154,11 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9795455, y: 0.91818184}
   m_EdgeRadius: 0
+--- !u!222 &2882366464164153242
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6619115775614577652}
+  m_CullTransparentMesh: 1

@@ -878,10 +878,15 @@ MonoBehaviour:
   - {fileID: 5403136676280954770, guid: 02afe3782364a6b4fba7fc2d75a7f37d, type: 3}
   bossPrefab:
   - {fileID: 9108052385687302119, guid: 902830d8c9a644f468f3f569d59c1280, type: 3}
+  itemPrefab:
+  - {fileID: 7958514822310339247, guid: 91a5ef58857166c439e467773c1342de, type: 3}
+  - {fileID: 1037234369719150361, guid: 84fb28a59360554418f4feb699a14b47, type: 3}
+  - {fileID: 2438723635245266057, guid: b761b4420dca19345b31605c0ce0c6ba, type: 3}
   Exit_Obj: {fileID: 7245539153769404337, guid: 977b0bf05afa5d847a0e0eea36e775e1, type: 3}
-  roomCount: 8
-  roomMinSize: 5
-  roomMaxSize: 8
+  mapSize: 40
+  roomCount: 4
+  roomMinSize: 4
+  roomMaxSize: 6
 --- !u!156049354 &610656242
 Grid:
   m_ObjectHideFlags: 0
@@ -1921,8 +1926,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 311.38, y: 157.81}
-  m_SizeDelta: {x: -622.77, y: -315.62}
+  m_AnchoredPosition: {x: 388.52, y: 227.99}
+  m_SizeDelta: {x: -777.03, y: -455.97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1540915394
 MonoBehaviour:

@@ -18,6 +18,7 @@ public class Enemys : MonoBehaviour
     {
         EnemyStatus = Instantiate(Status);//個別のステータスに置き換えする
         EnemyStatus.HP = EnemyStatus.maxHP;//念のためHPを初期化
+        EnemyLevelSetting(Exit.Now_Floor);
         Log = GameObject.Find("BattleLog").GetComponent<BattleLog>();
         tilemaps = Tile.Save_maps;
 
@@ -34,7 +35,7 @@ public class Enemys : MonoBehaviour
             }
         }
     }
-
+    //プレイヤーの移動方向を取得
     Vector2Int GetMoveDirection()
     {
         if (CanSeePlayer())
@@ -148,6 +149,18 @@ public class Enemys : MonoBehaviour
         if (PlayerControl.p_status.HP <= 0)
         {
             Debug.Log("プレイヤー死亡");
+        }
+    }
+    //階層を登っていく度に初期ステータスに階層分のバフをかける
+    void EnemyLevelSetting(int floor_level)
+    {
+        EnemyStatus.level = floor_level;
+        EnemyStatus.exp += EnemyStatus.level;
+        EnemyStatus.maxHP += EnemyStatus.level * 2;
+        EnemyStatus.attack += EnemyStatus.level + 1;
+        if(floor_level > 3)
+        {
+            EnemyStatus.diffence += EnemyStatus.level * 2;
         }
     }
 }

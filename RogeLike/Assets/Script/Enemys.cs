@@ -131,6 +131,8 @@ public class Enemys : MonoBehaviour
         Log.ShowMessage($"{EnemyStatus.charaName} to die");
 
         Tile.allEnemys.Remove(this); // リストから削除
+        p_control = Player.GetComponent<PlayerControl>();
+        p_control.Exp_gain(Status.exp);//プレイヤーに経験値を入れる
         Destroy(gameObject);
     }
     private void AttackPlayer()

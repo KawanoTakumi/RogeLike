@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -22,6 +24,8 @@ public class PlayerControl : MonoBehaviour
     private Enemys currentTarget = null;
     private BattleLog Log;
     private Text HP_Text;//体力表示
+    private TextMeshProUGUI level_text;//レベル表示
+    public static int max_exp = 5;
     void Awake()
     {
         inputActions = new Move();
@@ -31,22 +35,31 @@ public class PlayerControl : MonoBehaviour
     {
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         p_status = Instantiate(PlayerStatus);
+        p_status = PlayerStatus;
         //タイルマップを読み込む
         tilemap = Tile.Save_maps;
         Log = GameObject.Find("BattleLog").GetComponent<BattleLog>();
         Player_Moving = true;
+        //体力表示用オブジェクト読み込み
         PlayerHPBar = GameObject.Find("HP").GetComponent<Slider>();
         HP_Text = GameObject.Find("HP_Text").GetComponent<Text>();
         p_status.HP = p_status.maxHP;
         PlayerHPBar.maxValue = p_status.maxHP;
         PlayerHPBar.value = p_status.HP;
         HP_Text.text = p_status.HP + "/" + p_status.maxHP;
+
+        //レベル表示用テキスト表示
+        level_text = GameObject.Find("level_text").GetComponent<TextMeshProUGUI>();
+        Debug.Log("現在のレベル" + p_status.level);
     }
 
     void OnEnable() => inputActions.Enable();
     void OnDisable() => inputActions.Disable();
     void Update()
     {
+        //レベル表示
+        level_text.text = "Lv." + p_status.level;
+
         UpdateNearbyEnemies();
 
         if (Keyboard.current.rKey.wasPressedThisFrame)
@@ -119,6 +132,7 @@ public class PlayerControl : MonoBehaviour
     {
         foreach (var enemy in Tile.allEnemys)
         {
+            if (enemy == null) return false;
             Vector3Int enemyCell = tilemap.WorldToCell(enemy.transform.position);
             if (enemyCell == targetCell)
             {
@@ -158,6 +172,7 @@ public class PlayerControl : MonoBehaviour
 
         foreach (var enemy in Tile.allEnemys)
         {
+            if (enemy == null) break;
             Vector3Int enemyCell = tilemap.WorldToCell(enemy.transform.position);
             int dx = Mathf.Abs(playerCell.x - enemyCell.x);
             int dy = Mathf.Abs(playerCell.y - enemyCell.y);
@@ -183,5 +198,34 @@ public class PlayerControl : MonoBehaviour
     {
         PlayerHPBar.value = p_status.HP;
         HP_Text.text = p_status.HP + "/" + p_status.maxHP;
+    }
+    //経験値獲得
+    public void Exp_gain(int exp)
+    {
+        p_status.exp += exp;
+        if(p_status.exp > max_exp)
+        {
+            LevelUp();
+        }
+    }
+    //レベルアップ
+    void LevelUp()
+    {
+        //レベル増加
+        p_status.level++;
+        p_status.level_exp = 0;
+        max_exp = p_status.level * 5;
+
+        //ステータスを増加させる
+        p_status.attack     += 2;
+        p_status.diffence   += 1;
+        p_status.maxHP      += 5;
+        p_status.HP = p_status.maxHP;
+        PlayerStatus = p_status;
+        //レベルが３以上なら攻撃範囲を+１する
+        if(p_status.level > 3)
+        {
+            p_status.attackRange = 2;
+        }
     }
 }

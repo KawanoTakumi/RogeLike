@@ -1,12 +1,24 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class Exit : MonoBehaviour
 {
     public static Vector3 exitCell;
     public static Vector3 playerPos;
+    public static int Now_Floor= 4;
+    GameObject FText;
+    TextMeshProUGUI Floor_Text;
+
+    public void Start()
+    {
+        FText = GameObject.Find("FloorText");
+        Floor_Text = FText.GetComponent<TextMeshProUGUI>();
+        Floor_Text.text = Now_Floor + "F";
+    }
     private void OnTriggerStay2D(Collider2D collision)
     {
         Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
@@ -32,6 +44,7 @@ public class Exit : MonoBehaviour
     void LoadNextMap()
     {
         // 例：SceneManagerを使って次のシーンへ
+        Now_Floor++;
         SceneManager.LoadScene("SampleScene");
     }
 }

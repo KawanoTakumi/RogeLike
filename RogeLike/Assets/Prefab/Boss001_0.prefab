@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8885391310349245773}
   - component: {fileID: 3167395640182730307}
   - component: {fileID: 9105592058002057229}
+  - component: {fileID: 2766176316721505551}
   m_Layer: 0
   m_Name: Boss001_0
   m_TagString: Untagged
@@ -134,3 +135,17 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9840909, y: 0.91136366}
   m_EdgeRadius: 0
+--- !u!114 &2766176316721505551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9108052385687302119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe940c51a48f85645b278a9a336cb765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Status: {fileID: 11400000, guid: 49185767d22f0c14bbc8036451fa2914, type: 2}
+  Enemy_Moving: 0

@@ -5,46 +5,68 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
-public class Exit : MonoBehaviour
+public class Exit : Tile
 {
     public static Vector3 exitCell;
     public static Vector3 playerPos;
-    public static int Now_Floor= 1;
+    public static int Now_Floor= 1;//現在の階数
+    public static int Clear_Dungeon = 0;//ダンジョンクリア回数
     GameObject FText;
     TextMeshProUGUI Floor_Text;
+    private SpriteRenderer Sp;
 
     public void Start()
     {
+        Sp = gameObject.GetComponent<SpriteRenderer>();
+        Sp.color = Color.white;
         FText = GameObject.Find("FloorText");
         Floor_Text = FText.GetComponent<TextMeshProUGUI>();
         Floor_Text.text = Now_Floor + "F";
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Vector3Int playerCell = Tile.Save_maps.WorldToCell(playerPos);
+        Vector3Int playerCell = Save_maps.WorldToCell(playerPos);
         if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
         {
             LoadNextMap();
-            Tile.allEnemys.Clear();
+            allEnemys.Clear();
         }
     }
     void Update()
     {
-        
-        Vector3 playerCell = Tile.Save_maps.WorldToCell(playerPos);
-        playerCell.x += 0.5f;
-        playerCell.y += 0.5f;
-        if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
+        if(!Boss_Flag)
         {
-            LoadNextMap();
-            Tile.allEnemys.Clear();
+            Sp.color = Color.white;
+            Vector3 playerCell = Save_maps.WorldToCell(playerPos);
+            playerCell.x += 0.5f;
+            playerCell.y += 0.5f;
+            if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                LoadNextMap();
+                allEnemys.Clear();
+            }
+        }
+        else
+        {
+            Sp.color = Color.black;
         }
     }
 
     void LoadNextMap()
     {
-        // 例：SceneManagerを使って次のシーンへ
         Now_Floor++;
-        SceneManager.LoadScene("SampleScene");
+        if(Now_Floor <= MAX_FLOOR)
+        {
+            SceneManager.LoadScene("Dungeon");
+        }
+        else
+        {
+            Clear_Dungeon++;//クリア階数を増加
+            SceneManager.LoadScene("Cleard");
+        }
+    }
+    public static void Defeat_Player()
+    {
+        SceneManager.LoadScene("Lose");
     }
 }

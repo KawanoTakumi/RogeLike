@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Boss001
   m_EditorClassIdentifier: 
   charaName: Devil
-  maxHP: 40
-  HP: 40
-  attack: 5
-  diffence: 3
+  level: 1
+  maxHP: 60
+  HP: 60
+  attack: 10
+  diffence: 4
   attackRange: 1
+  level_exp: 0
   searchRange: 2
-  exp: 30
+  exp: 50

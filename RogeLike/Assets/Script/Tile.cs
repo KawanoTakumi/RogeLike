@@ -6,8 +6,14 @@ using UnityEngine.Tilemaps;
 public class Tile : MonoBehaviour
 {
     public Tilemap tilemap;//タイルマップ
-    public TileBase floorTile;//床タイル
-    public TileBase wallTile;//壁タイル
+    //床タイル
+    public TileBase[] floorTile;
+    private int ftile_number;
+    public static TileBase FTILENAME;
+    //壁タイル
+    public TileBase[] wallTile;
+    private int wtile_number;
+
     public TileBase stairsTile;//階段タイル
     public GameObject playerPrefab;//プレイヤー
     public GameObject[] enemyPrefab;//敵
@@ -23,27 +29,27 @@ public class Tile : MonoBehaviour
     private List<Room> rooms = new();
     public static List<Enemys> allEnemys = new();
     public static Tilemap Save_maps;
-    const int MAX_FLOOR = 5;
+    public static int MAX_FLOOR = 5;
+    public static bool Boss_Flag = false;
     void Start()
     {
+        //マップタイル設定(ワールドマップからダンジョンに入ったら設定)
+        SelectTileMaps();
+
         //マップの大きさを設定
         MAP_SIZE = mapSize;
         Save_maps = tilemap;
         //マップを生成
         if(Exit.Now_Floor < MAX_FLOOR)
         {
+            //部屋生成
             GenerateRooms();
+            //廊下生成
             ConnectRooms();
-
-            //部屋のどこかに次の階層へのタイルを配置
-            Room selectedRoom = rooms[Random.Range(0, rooms.Count)];//次の階層に行ける部屋を作成
-            Vector2Int center = selectedRoom.Center;
-            Vector3Int cellPos = new Vector3Int(center.x, center.y, 0);
-            tilemap.SetTile(cellPos, stairsTile);
-            Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
-            Instantiate(Exit_Obj, ExitWorldPos, Quaternion.identity);
-            Exit.exitCell = ExitWorldPos;
-
+            //カメラを部屋の中心に生成
+            CenterCameraOnFirstRoom();
+            //カメラの位置にプレイヤー生成
+            CameraToPlayer();
             //各部屋に敵を生成
             SpawnEnemies(rooms);
             //各部屋にアイテム生成
@@ -51,18 +57,36 @@ public class Tile : MonoBehaviour
         }
         else
         {
+            //ボス部屋生成
             GenerateBossRoom();
+            //カメラを部屋の中心に生成
+            CenterCameraOnFirstRoom();
+            //カメラの位置にプレイヤー生成
+            CameraToPlayer();
+            Boss_Flag = true;
         }
         //壁を生成
         DrawWalls();
-        //カメラを部屋の中心に生成
-        CenterCameraOnFirstRoom();
-
-        //カメラの位置にプレイヤーを生成
+        //階段タイル生成
+        ExitTileGenerate();
+    }
+    //カメラの位置にプレイヤーを生成
+    public void CameraToPlayer()
+    {
         Vector3 cameraPos = Camera.main.transform.position;
         Vector3Int gridPos = tilemap.WorldToCell(cameraPos);
         Vector3 spawnWorldPos = tilemap.CellToWorld(gridPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
         Instantiate(playerPrefab, spawnWorldPos, Quaternion.identity);
+    }
+
+    //タイル画像設定スクリプト+階層を設定
+    void SelectTileMaps()
+    {
+        ftile_number = Random.Range(0, floorTile.Count());
+        FTILENAME = floorTile[ftile_number];
+        wtile_number = Random.Range(0, wallTile.Count());
+        MAX_FLOOR = Random.Range(3, 5);
+        MAX_FLOOR = 2;
     }
 
     //部屋生成スクリプト
@@ -87,7 +111,7 @@ public class Tile : MonoBehaviour
         {
             for (int y = room.rect.yMin; y < room.rect.yMax; y++)
             {
-                tilemap.SetTile(new Vector3Int(x, y, 0), floorTile);
+                tilemap.SetTile(new Vector3Int(x, y, 0), floorTile[ftile_number]);
             }
         }
     }
@@ -103,7 +127,7 @@ public class Tile : MonoBehaviour
             for (int y = bounds.yMin; y < bounds.yMax; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
-                if (tilemap.GetTile(pos) == floorTile)
+                if (tilemap.GetTile(pos) == floorTile[ftile_number])
                 {
                     // 周囲8方向をチェック
                     foreach (Vector3Int dir in new Vector3Int[] {
@@ -116,7 +140,7 @@ public class Tile : MonoBehaviour
                         Vector3Int neighborPos = pos + dir;
                         if (tilemap.GetTile(neighborPos) == null)
                         {
-                            tilemap.SetTile(neighborPos, wallTile);
+                            tilemap.SetTile(neighborPos, wallTile[wtile_number]);
                         }
                     }
                 }
@@ -140,12 +164,12 @@ public class Tile : MonoBehaviour
         while (current.x != to.x)
         {
             current.x += (to.x > current.x) ? 1 : -1;
-            tilemap.SetTile(new Vector3Int(current.x, current.y, 0), floorTile);
+            tilemap.SetTile(new Vector3Int(current.x, current.y, 0), floorTile[ftile_number]);
         }
         while (current.y != to.y)
         {
             current.y += (to.y > current.y) ? 1 : -1;
-            tilemap.SetTile(new Vector3Int(current.x, current.y, 0), floorTile);
+            tilemap.SetTile(new Vector3Int(current.x, current.y, 0), floorTile[ftile_number]);
         }
     }
 
@@ -174,11 +198,11 @@ public class Tile : MonoBehaviour
                 );
                 //座標をタイル座標に設定、生成
                 Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(randomPos.x, randomPos.y, 0)) + new Vector3(0.5f, 0.5f, 0);
-                GameObject Enmey = Instantiate(enemyPrefab[enemyIndex], worldPos, Quaternion.identity);
-                allEnemys.Add(Enmey.GetComponent<Enemys>());
+                GameObject Enemy = Instantiate(enemyPrefab[enemyIndex], worldPos, Quaternion.identity);
+                allEnemys.Add(Enemy.GetComponent<Enemys>());
+                Enemys Enemy_status = Enemy.GetComponent<Enemys>();
             }
         }
-
     }
 
     //部屋のクラスを設定
@@ -219,7 +243,7 @@ public class Tile : MonoBehaviour
         {
             for (int j = bossRect.yMin; j < bossRect.yMax; j++)
             {
-                tilemap.SetTile(new Vector3Int(i, j, 0), floorTile);
+                tilemap.SetTile(new Vector3Int(i, j, 0), floorTile[ftile_number]);
             }
         }
 
@@ -231,16 +255,30 @@ public class Tile : MonoBehaviour
                 Vector3Int pos = new Vector3Int(i, j, 0);
                 if (tilemap.GetTile(pos) == null)
                 {
-                    tilemap.SetTile(pos, wallTile);
+                    tilemap.SetTile(pos, wallTile[wtile_number]);
                 }
             }
         }
 
         // ボス配置（中央）
         Vector2Int center = bossRoom.Center;
-        Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(center.x, center.y, 0)) + new Vector3(0.5f, 0.5f, 0);
+        Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(center.x, center.y-2, 0)) + new Vector3(0.5f, 0.5f, 0);
         GameObject boss = Instantiate(bossPrefab[0], worldPos, Quaternion.identity);
         allEnemys.Add(boss.GetComponent<Enemys>());
+    }
+
+    //階段タイル生成
+    public void ExitTileGenerate()
+    {
+        //部屋のどこかに次の階層へのタイルを配置
+        Room selectedRoom = rooms[Random.Range(0, rooms.Count)];//次の階層に行ける部屋を作成
+        Vector2Int center = selectedRoom.Center;
+        Vector3Int cellPos = new Vector3Int(center.x, center.y, 0);
+        tilemap.SetTile(cellPos, stairsTile);
+        Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
+        Instantiate(Exit_Obj, ExitWorldPos, Quaternion.identity);
+        Exit.exitCell = ExitWorldPos;
+
     }
 
     //アイテム生成関数
@@ -252,11 +290,10 @@ public class Tile : MonoBehaviour
             {
                 for (int y = room.rect.yMin + 1; y < room.rect.yMax - 1; y++)
                 {
-                    // 1/30の確率でアイテムを生成
-                    if (Random.Range(0, 30) == 0)
+                    if (Random.Range(0, 20) == 0)
                     {
                         Vector3Int cellPos = new Vector3Int(x, y, 0);
-                        if (tilemap.GetTile(cellPos) == floorTile)
+                        if (tilemap.GetTile(cellPos) == floorTile[ftile_number])
                         {
                             GameObject item = itemPrefab[Random.Range(0, itemPrefab.Length)];
                             Vector3 worldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0);
@@ -267,5 +304,4 @@ public class Tile : MonoBehaviour
             }
         }
     }
-
 }

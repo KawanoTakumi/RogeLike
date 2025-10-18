@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class Enemys : MonoBehaviour
 {
     public CharacterStatus Status;//ステータス読み込み用
+    public TextMeshProUGUI Levels;//レベル表示
     public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
-    private CharacterStatus EnemyStatus;//個別ステータスに置きかえ
+    public CharacterStatus EnemyStatus;//個別ステータスに置きかえ
     private Transform player;
     private GameObject Player;
     private Tilemap tilemaps; 
@@ -17,8 +19,8 @@ public class Enemys : MonoBehaviour
     void Start()
     {
         EnemyStatus = Instantiate(Status);//個別のステータスに置き換えする
+        EnemyLevelSetting(Exit.Now_Floor);//レベル補正を設定
         EnemyStatus.HP = EnemyStatus.maxHP;//念のためHPを初期化
-        EnemyLevelSetting(Exit.Now_Floor);
         Log = GameObject.Find("BattleLog").GetComponent<BattleLog>();
         tilemaps = Tile.Save_maps;
 
@@ -67,7 +69,7 @@ public class Enemys : MonoBehaviour
     bool IsWalkableTile(TileBase tile)
     {
         // 通行可能なTileだけを許可（例：FloorTile, PathTileなど）
-        return tile.name == "Tile 001_0" || tile.name == "Exit_0";
+        return tile.name == Tile.FTILENAME.name;
     }
 
     public void ExecuteTurn()
@@ -99,6 +101,7 @@ public class Enemys : MonoBehaviour
         // 他の敵がそのセルにいるかチェック
         foreach (var other in Tile.allEnemys)
         {
+            if (other == null) break;
             if (other == this) continue;
             Vector3Int otherCell = tilemaps.WorldToCell(other.transform.position);
             if (otherCell == targetCell)
@@ -129,38 +132,55 @@ public class Enemys : MonoBehaviour
 
     private void Die()
     {
-        Log.ShowMessage($"{EnemyStatus.charaName} to die");
-
+        Log.ShowMessage($"{EnemyStatus.charaName}を倒した！");
+        //ボスなら
+        if (EnemyStatus.name.Contains("Boss"))
+            Exit.Boss_Flag = false;
         Tile.allEnemys.Remove(this); // リストから削除
         p_control = Player.GetComponent<PlayerControl>();
-        p_control.Exp_gain(Status.exp);//プレイヤーに経験値を入れる
+        p_control.Exp_gain(EnemyStatus.exp);//プレイヤーに経験値を入れる
         Destroy(gameObject);
     }
     private void AttackPlayer()
     {
         p_control = Player.GetComponent<PlayerControl>();
-        int damage = Mathf.Max(Status.attack - PlayerControl.p_status.diffence, 1);
+        int damage = Mathf.Max(EnemyStatus.attack - PlayerControl.p_status.diffence, 1);
         PlayerControl.p_status.HP -= damage;
         PlayerControl.p_status.HP = Mathf.Max(PlayerControl.p_status.HP, 0);
         p_control.UpdateHPValue();
         if (Log != null)
-        Log.ShowMessage($" player hit to{damage} damage");
+        Log.ShowMessage($" プレイヤーは{damage}ダメージくらった");
 
         if (PlayerControl.p_status.HP <= 0)
         {
-            Debug.Log("プレイヤー死亡");
+            GameState.Lose_Flag = true;
+            Exit.Defeat_Player();//負け画面にする
         }
     }
     //階層を登っていく度に初期ステータスに階層分のバフをかける
-    void EnemyLevelSetting(int floor_level)
+    public void EnemyLevelSetting(int floor_level)
     {
-        EnemyStatus.level = floor_level;
-        EnemyStatus.exp += EnemyStatus.level;
-        EnemyStatus.maxHP += EnemyStatus.level * 2;
-        EnemyStatus.attack += EnemyStatus.level + 1;
-        if(floor_level > 3)
+        int set_level;//調整されたレベル
+        //レベルを調整する
+        if(floor_level < PlayerControl.Grobal_Player_Level -1)
         {
-            EnemyStatus.diffence += EnemyStatus.level * 2;
+            set_level = PlayerControl.Grobal_Player_Level -1;
+        }
+        else
+        {
+            set_level = floor_level;
+        }
+        set_level += Exit.Clear_Dungeon;//クリア階数分レベルを上げる
+        //ステータス設定
+        EnemyStatus.level = set_level;
+        EnemyStatus.exp += EnemyStatus.level*2;
+        EnemyStatus.maxHP += EnemyStatus.level * 2;
+        EnemyStatus.attack += EnemyStatus.level + 4;
+        Levels.text = EnemyStatus.level.ToString();
+        //防御力はレベルが5以上の場合増加させる
+        if(set_level > 5)
+        {
+            EnemyStatus.diffence += EnemyStatus.level;
         }
     }
 }

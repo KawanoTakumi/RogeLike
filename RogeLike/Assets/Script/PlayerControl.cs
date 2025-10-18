@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -20,6 +19,7 @@ public class PlayerControl : MonoBehaviour
 
     private List<Enemys> nearbyEnemies = new();
     public static CharacterStatus p_status;//個別のステータスに変更
+    public static int Grobal_Player_Level = 0;//敵の強さなどを設定する
     private int currentTargetIndex = 0;
     private Enemys currentTarget = null;
     private BattleLog Log;
@@ -50,7 +50,6 @@ public class PlayerControl : MonoBehaviour
 
         //レベル表示用テキスト表示
         level_text = GameObject.Find("level_text").GetComponent<TextMeshProUGUI>();
-        Debug.Log("現在のレベル" + p_status.level);
     }
 
     void OnEnable() => inputActions.Enable();
@@ -59,85 +58,82 @@ public class PlayerControl : MonoBehaviour
     {
         //レベル表示
         level_text.text = "Lv." + p_status.level;
-
-        UpdateNearbyEnemies();
-
-        //デバッグ:ステータスリセット
-        if(Keyboard.current.lKey.wasPressedThisFrame)
+        if(!GameState.Setting_Flag)
         {
-            StatusReset();
-        }
+            UpdateNearbyEnemies();
 
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            if (nearbyEnemies.Count > 0)
+            if (Keyboard.current.rKey.wasPressedThisFrame)
             {
-                currentTargetIndex = (currentTargetIndex + 1) % nearbyEnemies.Count;
-                currentTarget = nearbyEnemies[currentTargetIndex];
-                HighlightTarget(currentTarget);
-            }
-            else
-            {
-                Log.ShowMessage($"no hit enemys !");
-            }
-        }
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && currentTarget != null)
-        {
-
-            int damage = Mathf.Max(p_status.attack - currentTarget.Status.diffence, 1);
-            currentTarget.TakeDamage(damage);
-            //ログ追加
-            Log.ShowMessage($" {currentTarget.name} hit {damage} damage");
-            moveInput = Vector2.zero;
-
-            Player_Moving = false;
-            foreach (var enemy in Tile.allEnemys)
-            {
-                enemy.Enemy_Moving = true;
-            }
-            StartCoroutine(EnemyTurnRoutine());
-        }
-
-        //移動を制御
-        if (Time.time - lastMoveTime < moveCooldown || moveInput == Vector2.zero) return;
-
-        if (moveInput.x != 0 && moveInput.y != 0)
-        {
-            // どちらか一方向だけを優先（例：X方向を優先）
-            moveInput = new Vector2(moveInput.x, 0);
-            // moveInput = new Vector2(0, moveInput.y);
-        }
-
-        if (Player_Moving)
-        {
-
-            Vector3Int direction = Vector3Int.RoundToInt(moveInput);
-            Vector3Int currentCell = tilemap.WorldToCell(transform.position);
-            Vector3Int targetCell = currentCell + direction;
-            Vector3 targetWorld = tilemap.CellToWorld(targetCell) + new Vector3(0.5f, 0.5f, 0);
-            TileBase targetTile = tilemap.GetTile(targetCell);
-
-            if (targetTile != null && IsWalkableTile(targetTile) && !IsEnemyOnTarget(targetCell))
-            {
-                transform.position = targetWorld;
-                //移動したら自然回復、ターンごとに１回復
-                if(p_status.HP < p_status.maxHP)
+                if (nearbyEnemies.Count > 0)
                 {
-                    p_status.HP++;
-                    UpdateHPValue();
+                    currentTargetIndex = (currentTargetIndex + 1) % nearbyEnemies.Count;
+                    currentTarget = nearbyEnemies[currentTargetIndex];
+                    HighlightTarget(currentTarget);
                 }
-                Exit.playerPos = transform.position;
-                lastMoveTime = Time.time;
-                moveInput = Vector2.zero;
-                Player_Moving = false;
+                else
+                {
+                    Log.ShowMessage($"敵が周りにいない");
+                }
+            }
+            if (Keyboard.current.spaceKey.wasPressedThisFrame && currentTarget != null)
+            {
 
+                int damage = Mathf.Max(p_status.attack - currentTarget.EnemyStatus.diffence, 1);
+                currentTarget.TakeDamage(damage);
+                //ログ追加
+                Log.ShowMessage($" {currentTarget.EnemyStatus.charaName} に {damage} ダメージ与えた！");
+                moveInput = Vector2.zero;
+
+                Player_Moving = false;
                 foreach (var enemy in Tile.allEnemys)
                 {
                     enemy.Enemy_Moving = true;
                 }
                 StartCoroutine(EnemyTurnRoutine());
             }
+
+            //移動を制御
+            if (Time.time - lastMoveTime < moveCooldown || moveInput == Vector2.zero) return;
+
+            if (moveInput.x != 0 && moveInput.y != 0)
+            {
+                moveInput = new Vector2(moveInput.x, 0);
+            }
+
+            if (Player_Moving)
+            {
+
+                Vector3Int direction = Vector3Int.RoundToInt(moveInput);
+                Vector3Int currentCell = tilemap.WorldToCell(transform.position);
+                Vector3Int targetCell = currentCell + direction;
+                Vector3 targetWorld = tilemap.CellToWorld(targetCell) + new Vector3(0.5f, 0.5f, 0);
+                TileBase targetTile = tilemap.GetTile(targetCell);
+
+                if (targetTile != null && IsWalkableTile(targetTile) && !IsEnemyOnTarget(targetCell))
+                {
+                    transform.position = targetWorld;
+                    //移動したら自然回復、ターンごとに１回復
+                    if (p_status.HP < p_status.maxHP)
+                    {
+
+                        p_status.HP += p_status.level / 3;
+                        UpdateHPValue();
+                    }
+                    Exit.playerPos = transform.position;
+                    lastMoveTime = Time.time;
+                    moveInput = Vector2.zero;
+                    Player_Moving = false;
+
+                    foreach (var enemy in Tile.allEnemys)
+                    {
+                        enemy.Enemy_Moving = true;
+                    }
+                    StartCoroutine(EnemyTurnRoutine());
+                }
+            }
+
         }
+
     }
     // プレイヤーの移動先に敵がいるかチェック
     bool IsEnemyOnTarget(Vector3Int targetCell)
@@ -174,7 +170,7 @@ public class PlayerControl : MonoBehaviour
     bool IsWalkableTile(TileBase tile)
     {
         // 通行可能なTileだけを許可（例：FloorTile, PathTileなど）
-        return tile.name == "Tile 001_0"|| tile.name == "Exit_0";
+        return tile.name == Tile.FTILENAME.name|| tile.name == "Exit_0";
     }
     //周辺にいる敵を検知
     private void UpdateNearbyEnemies()
@@ -228,16 +224,21 @@ public class PlayerControl : MonoBehaviour
         {
             case 0:
                 {
-                    if (p_status.HP < p_status.maxHP - 5)
-                        p_status.HP += 5;
+                    p_status.HP += 30;
+                    Log.ShowMessage($" プレイヤーの体力が３０回復");
+                    if (p_status.HP > p_status.maxHP)
+                        p_status.HP = p_status.maxHP;
                 }break;
             case 1: 
                 {
-                    p_status.attack += 2;
-                } break;
+                    p_status.attack += 3;
+                    Log.ShowMessage($" プレイヤーの攻撃力が３増加");
+                }
+                break;
             case 2: 
-               { 
-                p_status.diffence += 2;
+               {
+                    Log.ShowMessage($" プレイヤーの防御力が３増加");
+                    p_status.diffence += 2;
                 } break;
         }
     }
@@ -247,11 +248,12 @@ public class PlayerControl : MonoBehaviour
     {
         //レベル増加
         p_status.level++;
+        Log.ShowMessage($"レベル{p_status.level}にレベルアップ！");
         p_status.level_exp = 0;
         max_exp = p_status.level *15;
 
         //ステータスを増加させる
-        p_status.attack     += 2;
+        p_status.attack     += 3;
         p_status.diffence   += 1;
         p_status.maxHP      += 5;
         p_status.HP = p_status.maxHP;
@@ -265,9 +267,11 @@ public class PlayerControl : MonoBehaviour
         {
             p_status.attackRange = 2;
         }
+        //レベルを保存
+        Grobal_Player_Level = p_status.level;
     }
     //デバッグ用、ゲームオーバー時ステータス初期化
-    void StatusReset()
+    public void StatusReset()
     {
         PlayerStatus.level = 1;
         PlayerStatus.maxHP = 100;

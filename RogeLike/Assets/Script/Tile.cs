@@ -69,6 +69,8 @@ public class Tile : MonoBehaviour
         DrawWalls();
         //階段タイル生成
         ExitTileGenerate();
+
+        
     }
     //カメラの位置にプレイヤーを生成
     public void CameraToPlayer()
@@ -86,7 +88,6 @@ public class Tile : MonoBehaviour
         FTILENAME = floorTile[ftile_number];
         wtile_number = Random.Range(0, wallTile.Count());
         MAX_FLOOR = Random.Range(3, 5);
-        MAX_FLOOR = 2;
     }
 
     //部屋生成スクリプト

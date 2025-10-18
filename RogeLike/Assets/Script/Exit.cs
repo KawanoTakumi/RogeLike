@@ -42,8 +42,8 @@ public class Exit : Tile
             playerCell.y += 0.5f;
             if (playerCell == exitCell && Keyboard.current.eKey.wasPressedThisFrame)
             {
-                LoadNextMap();
                 allEnemys.Clear();
+                LoadNextMap();
             }
         }
         else
@@ -62,6 +62,7 @@ public class Exit : Tile
         else
         {
             Clear_Dungeon++;//ƒNƒŠƒAŠK”‚ğ‘‰Á
+            GameState.Clear_Flag = true;
             SceneManager.LoadScene("Cleard");
         }
     }

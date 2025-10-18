@@ -9,7 +9,7 @@ public class GameState : MonoBehaviour
     public static bool Start_Flag = false;
     public static bool Lose_Flag = false;
     public static bool Clear_Flag = false;
-    string SceneName;
+    public static bool Reset_Flag = false;
     public static GameState Instance { get; private set; }
 
     private void Awake()
@@ -21,17 +21,13 @@ public class GameState : MonoBehaviour
         }
 
         Instance = this;
+        Reset_Flag = true;
         DontDestroyOnLoad(gameObject); // シーンをまたいで保持
-    }
-    private void Start()
-    {        
-        SceneManager.GetSceneByName(SceneName);
     }
     private void Update()
     {
         if(!Start_Flag)
         {
-            Debug.Log("スタート画面");
             if(Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 Start_Flag = true;
@@ -53,7 +49,6 @@ public class GameState : MonoBehaviour
         //設定中
         if(Setting_Flag)
         {
-            Debug.Log("設定中");
             if(Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
@@ -64,13 +59,12 @@ public class GameState : MonoBehaviour
         //負け中
         if(Lose_Flag)
         {
-            Debug.Log("負け中");
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
                 Setting_Flag = false;
                 Lose_Flag = false;
-                Player_Cnt.StatusReset();//プレイヤーのステータスを戻す
+                Reset_Flag = false;
                 Exit.Now_Floor = 1;//１階に戻す
                 BackTitle();
             }
@@ -78,22 +72,24 @@ public class GameState : MonoBehaviour
         //勝ち中
         if (Clear_Flag)
         {
-            Debug.Log("勝ち中");
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
                 Setting_Flag = false;
                 Clear_Flag = false;
+                Exit.Now_Floor = 1;
                 BackTitle();
             }
-            //ステータスそのままで新しくゲームをする
-            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            if(Keyboard.current.eKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
                 Setting_Flag = false;
                 Clear_Flag = false;
-                StartGame();
+                Exit.Now_Floor = 1;
+                RestartGame();
+
             }
+
         }
     }
     //タイトルに戻る
@@ -109,7 +105,7 @@ public class GameState : MonoBehaviour
     //ゲームを最初からする
     public void RestartGame()
     {
-        Player_Cnt.StatusReset();//プレイヤーのステータスを戻す
+        Reset_Flag = true;
         Exit.Now_Floor = 1;//１階に戻す
         Exit.Clear_Dungeon = 0;//クリア回数を0にする
         SceneManager.LoadScene("Dungeon");
@@ -117,7 +113,6 @@ public class GameState : MonoBehaviour
     //ゲームを終了する
     public void Exit_game()
     {
-        Player_Cnt.StatusReset();
         Application.Quit();
     }
 }

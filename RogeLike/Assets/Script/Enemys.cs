@@ -154,6 +154,7 @@ public class Enemys : MonoBehaviour
         if (PlayerControl.p_status.HP <= 0)
         {
             GameState.Lose_Flag = true;
+            Exit.Boss_Flag = false;
             Exit.Defeat_Player();//負け画面にする
         }
     }
@@ -171,6 +172,10 @@ public class Enemys : MonoBehaviour
             set_level = floor_level;
         }
         set_level += Exit.Clear_Dungeon;//クリア階数分レベルを上げる
+        if (gameObject.name.Contains("Boss"))
+        {
+            set_level += 3;//ボスは3レベル上げる
+        }
         //ステータス設定
         EnemyStatus.level = set_level;
         EnemyStatus.exp += EnemyStatus.level*2;

@@ -35,6 +35,12 @@ public class PlayerControl : MonoBehaviour
     {
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         p_status = Instantiate(PlayerStatus);
+        //リセットフラグがtrueならプレイヤーのレベルをリセットする
+        if(GameState.Reset_Flag)
+        {
+            StatusReset();
+            GameState.Reset_Flag = false;
+        }
         p_status = PlayerStatus;
         //タイルマップを読み込む
         tilemap = Tile.Save_maps;
@@ -169,7 +175,6 @@ public class PlayerControl : MonoBehaviour
     //移動できるタイルを設定
     bool IsWalkableTile(TileBase tile)
     {
-        // 通行可能なTileだけを許可（例：FloorTile, PathTileなど）
         return tile.name == Tile.FTILENAME.name|| tile.name == "Exit_0";
     }
     //周辺にいる敵を検知
@@ -180,7 +185,7 @@ public class PlayerControl : MonoBehaviour
 
         foreach (var enemy in Tile.allEnemys)
         {
-            if (enemy == null) break;
+            if (enemy == null) continue;
             Vector3Int enemyCell = tilemap.WorldToCell(enemy.transform.position);
             int dx = Mathf.Abs(playerCell.x - enemyCell.x);
             int dy = Mathf.Abs(playerCell.y - enemyCell.y);
@@ -280,8 +285,9 @@ public class PlayerControl : MonoBehaviour
         PlayerStatus.diffence = 5;
         PlayerStatus.searchRange = 1;
         PlayerStatus.level_exp = 0;
+        max_exp = PlayerStatus.level *15;
         PlayerStatus.exp = 0;
         p_status = PlayerStatus;
-        UpdateHPValue();
+        Grobal_Player_Level = PlayerStatus.level;
     }
 }

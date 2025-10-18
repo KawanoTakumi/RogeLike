@@ -31,6 +31,7 @@ public class GameState : MonoBehaviour
     {
         if(!Start_Flag)
         {
+            Debug.Log("スタート画面");
             if(Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 Start_Flag = true;
@@ -52,6 +53,7 @@ public class GameState : MonoBehaviour
         //設定中
         if(Setting_Flag)
         {
+            Debug.Log("設定中");
             if(Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
@@ -62,6 +64,7 @@ public class GameState : MonoBehaviour
         //負け中
         if(Lose_Flag)
         {
+            Debug.Log("負け中");
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
@@ -75,6 +78,7 @@ public class GameState : MonoBehaviour
         //勝ち中
         if (Clear_Flag)
         {
+            Debug.Log("勝ち中");
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 Start_Flag = false;
@@ -95,13 +99,11 @@ public class GameState : MonoBehaviour
     //タイトルに戻る
     public static void BackTitle()
     {
-        Debug.Log("タイトル");
         SceneManager.LoadScene("Title");
     }
     
     public static void StartGame()
     {
-        Debug.Log("スタートゲーム");
         SceneManager.LoadScene("Dungeon");
     }
     //ゲームを最初からする

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 public class Tile : MonoBehaviour
@@ -31,6 +33,7 @@ public class Tile : MonoBehaviour
     public static Tilemap Save_maps;
     public static int MAX_FLOOR = 5;
     public static bool Boss_Flag = false;
+    Room selectRoom;
     void Start()
     {
         //マップタイル設定(ワールドマップからダンジョンに入ったら設定)
@@ -84,10 +87,17 @@ public class Tile : MonoBehaviour
     //タイル画像設定スクリプト+階層を設定
     void SelectTileMaps()
     {
-        ftile_number = Random.Range(0, floorTile.Count());
+        //初回時のみ設定
+        if(Exit.Now_Floor == 1)
+        {
+            ftile_number = UnityEngine.Random.Range(0, floorTile.Count()-1);
+            wtile_number = UnityEngine.Random.Range(0, 1);
+            MAX_FLOOR = UnityEngine.Random.Range(3, 4 + Exit.Clear_Dungeon);//クリア回数が多ければ階層を増やす
+            //8以上は無し
+            if (MAX_FLOOR > 8)
+                MAX_FLOOR = 8;
+        }
         FTILENAME = floorTile[ftile_number];
-        wtile_number = Random.Range(0, wallTile.Count());
-        MAX_FLOOR = Random.Range(3, 5);
     }
 
     //部屋生成スクリプト
@@ -95,10 +105,10 @@ public class Tile : MonoBehaviour
     {
         for (int i = 0; i < roomCount; i++)
         {
-            int w = Random.Range(roomMinSize, roomMaxSize);
-            int h = Random.Range(roomMinSize, roomMaxSize);
-            int x = Random.Range(0, MAP_SIZE - w);
-            int y = Random.Range(0, MAP_SIZE - h);
+            int w = UnityEngine.Random.Range(roomMinSize, roomMaxSize);
+            int h = UnityEngine.Random.Range(roomMinSize, roomMaxSize);
+            int x = UnityEngine.Random.Range(0, MAP_SIZE - w);
+            int y = UnityEngine.Random.Range(0, MAP_SIZE - h);
             RectInt rect = new RectInt(x, y, w, h);
             Room room = new Room(rect);
             rooms.Add(room);
@@ -191,11 +201,11 @@ public class Tile : MonoBehaviour
             for (int i = 0; i < 3; i++) // 各部屋に3体出現
             {
                 // ランダムな敵種類を選択
-                int enemyIndex = Random.Range(0, enemyPrefab.Length);
+                int enemyIndex = UnityEngine.Random.Range(0, enemyPrefab.Length);
                 // ランダムな位置（部屋の範囲内）を取得
                 Vector2Int randomPos = new Vector2Int(
-                    Random.Range(room.rect.x + 1, room.rect.x + room.rect.width - 1),
-                    Random.Range(room.rect.y + 1, room.rect.y + room.rect.height - 1)
+                    UnityEngine.Random.Range(room.rect.x + 1, room.rect.x + room.rect.width - 1),
+                    UnityEngine.Random.Range(room.rect.y + 1, room.rect.y + room.rect.height - 1)
                 );
                 //座標をタイル座標に設定、生成
                 Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(randomPos.x, randomPos.y, 0)) + new Vector3(0.5f, 0.5f, 0);
@@ -231,13 +241,13 @@ public class Tile : MonoBehaviour
         int bossRoomSize = 10;
 
         // マップ内に収まるようにランダムな位置を決定
-        int x = Random.Range(1, MAP_SIZE - bossRoomSize - 1);
-        int y = Random.Range(1, MAP_SIZE - bossRoomSize - 1);
+        int x = UnityEngine.Random.Range(1, MAP_SIZE - bossRoomSize - 1);
+        int y = UnityEngine.Random.Range(1, MAP_SIZE - bossRoomSize - 1);
 
         // 部屋情報を作成
         RectInt bossRect = new RectInt(x, y, bossRoomSize, bossRoomSize);
         Room bossRoom = new Room(bossRect);
-        rooms.Add(bossRoom); // 必要なら別リストにしてもOK
+        rooms.Add(bossRoom);
 
         // 部屋描画（床タイル）
         for (int i = bossRect.xMin; i < bossRect.xMax; i++)
@@ -263,17 +273,25 @@ public class Tile : MonoBehaviour
 
         // ボス配置（中央）
         Vector2Int center = bossRoom.Center;
-        Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(center.x, center.y-2, 0)) + new Vector3(0.5f, 0.5f, 0);
-        GameObject boss = Instantiate(bossPrefab[0], worldPos, Quaternion.identity);
+        Vector3 worldPos = tilemap.CellToWorld(new Vector3Int(center.x, center.y+3, 0)) + new Vector3(0.5f, 0.5f, 0);
+        GameObject boss = Instantiate(bossPrefab[UnityEngine.Random.Range(0,bossPrefab.Count() -1)], worldPos, Quaternion.identity);
         allEnemys.Add(boss.GetComponent<Enemys>());
     }
 
     //階段タイル生成
     public void ExitTileGenerate()
     {
-        //部屋のどこかに次の階層へのタイルを配置
-        Room selectedRoom = rooms[Random.Range(0, rooms.Count)];//次の階層に行ける部屋を作成
-        Vector2Int center = selectedRoom.Center;
+        //部屋のどこかに次の階層へのタイルを配置(プレイヤーは0番目の部屋に必ず生成)
+        if (!Boss_Flag)
+        {
+            selectRoom = rooms[UnityEngine.Random.Range(1, rooms.Count)];//次の階層に行ける部屋を作成
+        }
+        else
+            selectRoom = rooms[0];//ボスの部屋なら0番目
+        //周囲８マスにも分散するように設定
+        Vector2Int center = selectRoom.Center;
+        center.x += UnityEngine.Random.Range(-1, 1);
+        center.y += UnityEngine.Random.Range(-1, 1);
         Vector3Int cellPos = new Vector3Int(center.x, center.y, 0);
         tilemap.SetTile(cellPos, stairsTile);
         Vector3 ExitWorldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0); // 中央に補正
@@ -291,12 +309,12 @@ public class Tile : MonoBehaviour
             {
                 for (int y = room.rect.yMin + 1; y < room.rect.yMax - 1; y++)
                 {
-                    if (Random.Range(0, 20) == 0)
+                    if (UnityEngine.Random.Range(0, 20) == 0)
                     {
                         Vector3Int cellPos = new Vector3Int(x, y, 0);
                         if (tilemap.GetTile(cellPos) == floorTile[ftile_number])
                         {
-                            GameObject item = itemPrefab[Random.Range(0, itemPrefab.Length)];
+                            GameObject item = itemPrefab[UnityEngine.Random.Range(0, itemPrefab.Length)];
                             Vector3 worldPos = tilemap.CellToWorld(cellPos) + new Vector3(0.5f, 0.5f, 0);
                             Instantiate(item, worldPos, Quaternion.identity);
                         }

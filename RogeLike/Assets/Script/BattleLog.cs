@@ -5,7 +5,7 @@ public class BattleLog : MonoBehaviour
 {
     public TextMeshProUGUI logText;//戦闘ログ
     private Queue<string> log = new();//ログ保存用キュー
-    private const int MAXLOG = 6;//過去6件まで表示
+    private const int MAXLOG = 5;//過去5件まで表示
 
     public void ShowMessage(string text)
     {

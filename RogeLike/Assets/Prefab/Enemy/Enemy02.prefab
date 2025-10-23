@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.88859, y: 0.94771}
+  m_SizeDelta: {x: 1, y: 0.94771}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &747898910794095551
 Canvas:
@@ -320,12 +320,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 7250111562104355492, guid: 64f901f85bd5ab24baa077310128db7b, type: 3}
+  m_Sprite: {fileID: 5638259562752074330, guid: 15e9e332ff8fbc1478cf104d1f2800ad, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.9795455, y: 0.91818184}
+  m_Size: {x: 0.0234375, y: 0.04296875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -346,6 +346,7 @@ MonoBehaviour:
   Status: {fileID: 11400000, guid: a7ef97580eea2b144b4eef9d1a433e0d, type: 2}
   Levels: {fileID: 4481466011909323422}
   Enemy_Moving: 0
+  EnemyStatus: {fileID: 0}
 --- !u!61 &-8387356737764787925
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -384,8 +385,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.9795455, y: 0.91818184}
-    newSize: {x: 0.9795455, y: 0.91818184}
+    oldSize: {x: 0.9525, y: 0.9775}
+    newSize: {x: 0.0234375, y: 0.04296875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0

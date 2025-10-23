@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class Enemys : MonoBehaviour
 {
+    public static int Start_Level = -1;
+
     public CharacterStatus Status;//ステータス読み込み用
     public TextMeshProUGUI Levels;//レベル表示
     public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
@@ -161,16 +164,16 @@ public class Enemys : MonoBehaviour
     //階層を登っていく度に初期ステータスに階層分のバフをかける
     public void EnemyLevelSetting(int floor_level)
     {
-        int set_level;//調整されたレベル
-        //レベルを調整する
-        if(floor_level < PlayerControl.Grobal_Player_Level -1)
+        int set_level = 1;//調整されたレベル
+        //１階層のプレイヤーのレベルを取得
+        if (Exit.Now_Floor == 1)
         {
-            set_level = PlayerControl.Grobal_Player_Level -1;
+            set_level = PlayerControl.Grobal_Player_Level;
         }
-        else
-        {
-            set_level = floor_level;
-        }
+        set_level += (floor_level + UnityEngine.Random.Range(-1,1));//プレイヤーレベルから少しランダム制を持たせる
+        //最低１は確保
+        if (set_level <= 0)
+            set_level = 1;
         set_level += Exit.Clear_Dungeon;//クリア階数分レベルを上げる
         if (gameObject.name.Contains("Boss"))
         {
@@ -182,8 +185,8 @@ public class Enemys : MonoBehaviour
         EnemyStatus.maxHP += EnemyStatus.level * 2;
         EnemyStatus.attack += EnemyStatus.level + 4;
         Levels.text = EnemyStatus.level.ToString();
-        //防御力はレベルが5以上の場合増加させる
-        if(set_level > 5)
+        //防御力はレベルが10以上の場合増加させる
+        if(set_level > 10)
         {
             EnemyStatus.diffence += EnemyStatus.level;
         }

@@ -25,7 +25,9 @@ public class PlayerControl : MonoBehaviour
     private BattleLog Log;
     private Text HP_Text;//体力表示
     private TextMeshProUGUI level_text;//レベル表示
+    private TextMeshProUGUI heal_text;//薬草の個数
     public static int max_exp = 5;
+    public static int heal_count = 0;//回復可能回数
     void Awake()
     {
         inputActions = new Move();
@@ -56,18 +58,24 @@ public class PlayerControl : MonoBehaviour
 
         //レベル表示用テキスト表示
         level_text = GameObject.Find("level_text").GetComponent<TextMeshProUGUI>();
+        heal_text = GameObject.Find("Heal_text").GetComponent<TextMeshProUGUI>();
     }
 
     void OnEnable() => inputActions.Enable();
     void OnDisable() => inputActions.Disable();
     void Update()
     {
-        //レベル表示
+        //表示
         level_text.text = "Lv." + p_status.level;
+        heal_text.text = "× " + heal_count + "/10";
+
+        if (p_status.HP > p_status.maxHP)
+            p_status.HP = p_status.maxHP;
         if(!GameState.Setting_Flag)
         {
             UpdateNearbyEnemies();
-
+            UpdateHPValue();
+            //索敵
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 if (nearbyEnemies.Count > 0)
@@ -81,13 +89,29 @@ public class PlayerControl : MonoBehaviour
                     Log.ShowMessage($"敵が周りにいない");
                 }
             }
+            //回復
+            if(Keyboard.current.qKey.wasPressedThisFrame && heal_count > 0)
+            {
+                if (p_status.HP < p_status.maxHP)
+                {
+                    p_status.HP += 30;
+                    if (p_status.HP > p_status.maxHP)
+                        p_status.HP = p_status.maxHP;
+                    heal_count--;
+                    //念のため
+                    if (heal_count < 0)
+                        heal_count = 0;
+                }
+
+            }
+            //攻撃
             if (Keyboard.current.spaceKey.wasPressedThisFrame && currentTarget != null)
             {
 
                 int damage = Mathf.Max(p_status.attack - currentTarget.EnemyStatus.diffence, 1);
-                currentTarget.TakeDamage(damage);
                 //ログ追加
                 Log.ShowMessage($" {currentTarget.EnemyStatus.charaName} に {damage} ダメージ与えた！");
+                currentTarget.TakeDamage(damage);
                 moveInput = Vector2.zero;
 
                 Player_Moving = false;
@@ -108,7 +132,6 @@ public class PlayerControl : MonoBehaviour
 
             if (Player_Moving)
             {
-
                 Vector3Int direction = Vector3Int.RoundToInt(moveInput);
                 Vector3Int currentCell = tilemap.WorldToCell(transform.position);
                 Vector3Int targetCell = currentCell + direction;
@@ -137,9 +160,7 @@ public class PlayerControl : MonoBehaviour
                     StartCoroutine(EnemyTurnRoutine());
                 }
             }
-
         }
-
     }
     // プレイヤーの移動先に敵がいるかチェック
     bool IsEnemyOnTarget(Vector3Int targetCell)
@@ -229,10 +250,23 @@ public class PlayerControl : MonoBehaviour
         {
             case 0:
                 {
-                    p_status.HP += 30;
-                    Log.ShowMessage($" プレイヤーの体力が３０回復");
-                    if (p_status.HP > p_status.maxHP)
-                        p_status.HP = p_status.maxHP;
+                    //１０こまで持てる
+                    if(heal_count < 10)
+                    {
+                        heal_count++;
+                        Log.ShowMessage($"薬草を拾った！");
+                    }
+                    else
+                    {
+                        if(p_status.HP < p_status.maxHP)
+                        {
+                            p_status.HP += 30;
+                            if(p_status.HP > p_status.maxHP)
+                                p_status.HP = p_status.maxHP;
+                            Log.ShowMessage($"持ちきれないので食べた！HP３０回復");
+                        }
+                    }
+                    
                 }break;
             case 1: 
                 {
@@ -243,7 +277,7 @@ public class PlayerControl : MonoBehaviour
             case 2: 
                {
                     Log.ShowMessage($" プレイヤーの防御力が３増加");
-                    p_status.diffence += 2;
+                    p_status.diffence += 3;
                 } break;
         }
     }
@@ -272,8 +306,8 @@ public class PlayerControl : MonoBehaviour
         {
             p_status.attackRange = 2;
         }
-        //レベルを保存
-        Grobal_Player_Level = p_status.level;
+            //レベルを保存
+            Grobal_Player_Level = p_status.level;
     }
     //デバッグ用、ゲームオーバー時ステータス初期化
     public void StatusReset()

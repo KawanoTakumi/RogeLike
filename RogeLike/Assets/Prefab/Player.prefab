@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveCooldown: 0.2
+  AttackEffect: {fileID: 5066433372755216518, guid: f2033618befd979418b8a512025c86d8, type: 3}
   PlayerStatus: {fileID: 11400000, guid: b7ee9f5347014ef40a4b6839fc5d92e1, type: 2}
 --- !u!61 &212371293164382178
 BoxCollider2D:
@@ -142,7 +143,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.0171875, y: 1.0046875}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1.0171875, y: 1.0046875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -188,7 +189,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.0171875, y: 1.0046875}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1.0171875, y: 1.0046875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

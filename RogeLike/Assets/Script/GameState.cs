@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GameState : MonoBehaviour
 {
     PlayerControl Player_Cnt;
+    public AudioSource hits;
     GameObject panel;
     TextMeshProUGUI CCount;
     TextMeshProUGUI LCount;
@@ -54,17 +55,19 @@ public class GameState : MonoBehaviour
             if(Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 Start_Flag = true;
+                hits.Play();
                 StartGame();
             }
             if(Keyboard.current.escapeKey.wasPressedThisFrame)
             {
+                hits.Play();
                 Exit_game();
             }
         }
         //ÉQÅ[ÉÄì‡
         if(Start_Flag && Keyboard.current.gKey.wasPressedThisFrame)
         {
-
+            hits.Play();
             if (!Setting_Flag)
             {
                 Setting_Flag = true;
@@ -79,10 +82,12 @@ public class GameState : MonoBehaviour
         {
             if(Keyboard.current.rKey.wasPressedThisFrame)
             {
+                hits.Play();
                 BackTitle();
             }
             if (Keyboard.current.eKey.wasPressedThisFrame)
             {
+                hits.Play();
                 RestartGame();
             }
         }
@@ -91,6 +96,7 @@ public class GameState : MonoBehaviour
         {
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
+                hits.Play();
                 Start_Flag = false;
                 Setting_Flag = false;
                 Lose_Flag = false;
@@ -104,10 +110,12 @@ public class GameState : MonoBehaviour
         {
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
+                hits.Play();
                 BackTitle();
             }
             if(Keyboard.current.eKey.wasPressedThisFrame)
             {
+                hits.Play();
                 RestartGame();
             }
 

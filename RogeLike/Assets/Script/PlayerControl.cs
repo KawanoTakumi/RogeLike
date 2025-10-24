@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class PlayerControl : MonoBehaviour
 {
     public float moveCooldown = 0.2f;
+    public GameObject AttackEffect;//攻撃モーション
+    public GameObject HealEffect;//回復モーション
     private float lastMoveTime;
     Tilemap tilemap;
     private Vector2 moveInput;
@@ -73,7 +75,7 @@ public class PlayerControl : MonoBehaviour
             p_status.HP = p_status.maxHP;
         if(!GameState.Setting_Flag)
         {
-            UpdateNearbyEnemies();
+            UpdateNearbyEnemies(p_status.attackRange);
             UpdateHPValue();
             //索敵
             if (Keyboard.current.rKey.wasPressedThisFrame)
@@ -92,8 +94,11 @@ public class PlayerControl : MonoBehaviour
             //回復
             if(Keyboard.current.qKey.wasPressedThisFrame && heal_count > 0)
             {
+                
                 if (p_status.HP < p_status.maxHP)
                 {
+                    if (HealEffect != null)
+                        Instantiate(HealEffect, gameObject.transform.position, Quaternion.identity);
                     p_status.HP += 30;
                     if (p_status.HP > p_status.maxHP)
                         p_status.HP = p_status.maxHP;
@@ -101,6 +106,11 @@ public class PlayerControl : MonoBehaviour
                     //念のため
                     if (heal_count < 0)
                         heal_count = 0;
+                    Log.ShowMessage("薬草を使用した");
+                }
+                else
+                {
+                    Log.ShowMessage($"薬草を食べる気分じゃない");
                 }
 
             }
@@ -109,6 +119,10 @@ public class PlayerControl : MonoBehaviour
             {
 
                 int damage = Mathf.Max(p_status.attack - currentTarget.EnemyStatus.diffence, 1);
+                //攻撃アニメーションを生成
+                if (AttackEffect != null)
+                    Instantiate(AttackEffect, currentTarget.transform.position, Quaternion.identity);
+
                 //ログ追加
                 Log.ShowMessage($" {currentTarget.EnemyStatus.charaName} に {damage} ダメージ与えた！");
                 currentTarget.TakeDamage(damage);
@@ -199,7 +213,7 @@ public class PlayerControl : MonoBehaviour
         return tile.name == Tile.FTILENAME.name|| tile.name == "Exit_0";
     }
     //周辺にいる敵を検知
-    private void UpdateNearbyEnemies()
+    private void UpdateNearbyEnemies(int range)
     {
         nearbyEnemies.Clear();
         Vector3Int playerCell = tilemap.WorldToCell(transform.position);
@@ -211,7 +225,7 @@ public class PlayerControl : MonoBehaviour
             int dx = Mathf.Abs(playerCell.x - enemyCell.x);
             int dy = Mathf.Abs(playerCell.y - enemyCell.y);
 
-            if (dx <= p_status.attackRange && dy <= p_status.attackRange)
+            if (dx <= range && dy <= range)
             {
                 nearbyEnemies.Add(enemy);
             }
@@ -234,6 +248,7 @@ public class PlayerControl : MonoBehaviour
         PlayerHPBar.value = p_status.HP;
         HP_Text.text = p_status.HP + "/" + p_status.maxHP;
     }
+
     //経験値獲得
     public void Exp_gain(int exp)
     {
@@ -263,6 +278,8 @@ public class PlayerControl : MonoBehaviour
                             p_status.HP += 30;
                             if(p_status.HP > p_status.maxHP)
                                 p_status.HP = p_status.maxHP;
+                            if (HealEffect != null)
+                                Instantiate(HealEffect, gameObject.transform.position, Quaternion.identity);
                             Log.ShowMessage($"持ちきれないので食べた！HP３０回復");
                         }
                     }
@@ -305,6 +322,10 @@ public class PlayerControl : MonoBehaviour
         if (p_status.level > 3)
         {
             p_status.attackRange = 2;
+        }
+        else
+        {
+            p_status.attackRange = 1;
         }
             //レベルを保存
             Grobal_Player_Level = p_status.level;

@@ -13,11 +13,14 @@ public class Enemys : MonoBehaviour
     public TextMeshProUGUI Levels;//レベル表示
     public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
     public CharacterStatus EnemyStatus;//個別ステータスに置きかえ
+
+    private AudioSource AttckSE;
     private Transform player;
     private GameObject Player;
     private Tilemap tilemaps; 
     private BattleLog Log;
     private PlayerControl p_control;
+    private static int normal_levels = 0;//基本となるレベル
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -39,6 +42,8 @@ public class Enemys : MonoBehaviour
                 Debug.LogWarning("プレイヤーが読み込まれませんでした");
             }
         }
+        AttckSE = GameObject.Find("AttckSE").GetComponent<AudioSource>();
+
     }
     //プレイヤーの移動方向を取得
     Vector2Int GetMoveDirection()
@@ -153,6 +158,12 @@ public class Enemys : MonoBehaviour
         p_control.UpdateHPValue();
         if (Log != null)
         Log.ShowMessage($" プレイヤーは{damage}ダメージくらった");
+        //攻撃のBGMを再生
+        if(AttckSE != null)
+        {
+            AttckSE.Play();
+        }
+            
 
         if (PlayerControl.p_status.HP <= 0)
         {
@@ -164,11 +175,12 @@ public class Enemys : MonoBehaviour
     //階層を登っていく度に初期ステータスに階層分のバフをかける
     public void EnemyLevelSetting(int floor_level)
     {
-        int set_level = 1;//調整されたレベル
+        int set_level = normal_levels;//調整されたレベル
         //１階層のプレイヤーのレベルを取得
         if (Exit.Now_Floor == 1)
         {
             set_level = PlayerControl.Grobal_Player_Level;
+            normal_levels = set_level;
         }
         set_level += (floor_level + UnityEngine.Random.Range(-1,1));//プレイヤーレベルから少しランダム制を持たせる
         //最低１は確保

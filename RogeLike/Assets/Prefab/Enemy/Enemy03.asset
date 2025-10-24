@@ -20,5 +20,5 @@ MonoBehaviour:
   diffence: 1
   attackRange: 1
   level_exp: 0
-  searchRange: 2
-  exp: 7
+  searchRange: 3
+  exp: 12

@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Enemy02
   m_EditorClassIdentifier: 
   charaName: Robot
+  level: 1
   maxHP: 10
   HP: 10
   attack: 3
   diffence: 1
   attackRange: 1
-  searchRange: 2
+  level_exp: 0
+  searchRange: 3
   exp: 5

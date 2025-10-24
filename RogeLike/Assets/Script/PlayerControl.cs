@@ -155,13 +155,6 @@ public class PlayerControl : MonoBehaviour
                 if (targetTile != null && IsWalkableTile(targetTile) && !IsEnemyOnTarget(targetCell))
                 {
                     transform.position = targetWorld;
-                    //移動したら自然回復、ターンごとに１回復
-                    if (p_status.HP < p_status.maxHP)
-                    {
-
-                        p_status.HP += p_status.level / 3;
-                        UpdateHPValue();
-                    }
                     Exit.playerPos = transform.position;
                     lastMoveTime = Time.time;
                     moveInput = Vector2.zero;
@@ -293,8 +286,8 @@ public class PlayerControl : MonoBehaviour
                 break;
             case 2: 
                {
-                    Log.ShowMessage($" プレイヤーの防御力が３増加");
                     p_status.diffence += 3;
+                    Log.ShowMessage($" プレイヤーの防御力が３増加");
                 } break;
         }
     }
@@ -306,10 +299,10 @@ public class PlayerControl : MonoBehaviour
         p_status.level++;
         Log.ShowMessage($"レベル{p_status.level}にレベルアップ！");
         p_status.level_exp = 0;
-        max_exp = p_status.level *15;
+        max_exp = p_status.level *20;
 
         //ステータスを増加させる
-        p_status.attack     += 3;
+        p_status.attack     += 2;
         p_status.diffence   += 1;
         p_status.maxHP      += 5;
         p_status.HP = p_status.maxHP;

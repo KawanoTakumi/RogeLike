@@ -189,16 +189,16 @@ public class Enemys : MonoBehaviour
         set_level += Exit.Clear_Dungeon;//クリア階数分レベルを上げる
         if (gameObject.name.Contains("Boss"))
         {
-            set_level += 3;//ボスは3レベル上げる
+            set_level += 5;//ボスは3レベル上げる
         }
         //ステータス設定
         EnemyStatus.level = set_level;
-        EnemyStatus.exp += EnemyStatus.level*2;
-        EnemyStatus.maxHP += EnemyStatus.level * 2;
-        EnemyStatus.attack += EnemyStatus.level + 4;
+        EnemyStatus.exp += EnemyStatus.level+10;
+        EnemyStatus.maxHP += EnemyStatus.level * 3;
+        EnemyStatus.attack += EnemyStatus.level * 2;
         Levels.text = EnemyStatus.level.ToString();
-        //防御力はレベルが10以上の場合増加させる
-        if(set_level > 10)
+        //防御力はレベルが5以上の場合増加させる
+        if(set_level > 5)
         {
             EnemyStatus.diffence += EnemyStatus.level;
         }

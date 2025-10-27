@@ -94,8 +94,8 @@ public class Tile : MonoBehaviour
             wtile_number = UnityEngine.Random.Range(0, 1);
             MAX_FLOOR = UnityEngine.Random.Range(3, 4 + Exit.Clear_Dungeon);//ƒNƒŠƒA‰ñ”‚ª‘½‚¯‚ê‚ÎŠK‘w‚ð‘‚â‚·
             //8ˆÈã‚Í–³‚µ
-            if (MAX_FLOOR > 8)
-                MAX_FLOOR = 8;
+            if (MAX_FLOOR > 6)
+                MAX_FLOOR = 6;
         }
         FTILENAME = floorTile[ftile_number];
     }

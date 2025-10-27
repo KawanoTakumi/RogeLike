@@ -3967,7 +3967,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "     R      Back Title\n     E      Reset Game"
+  m_text: "     R      Back Title\n     P      Reset Game"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e801aec48e28b2843a3acfb2f017d922, type: 2}
   m_sharedMaterial: {fileID: 4843172625679035359, guid: e801aec48e28b2843a3acfb2f017d922, type: 2}

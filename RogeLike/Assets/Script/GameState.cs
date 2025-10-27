@@ -85,7 +85,7 @@ public class GameState : MonoBehaviour
                 hits.Play();
                 BackTitle();
             }
-            if (Keyboard.current.eKey.wasPressedThisFrame)
+            if (Keyboard.current.pKey.wasPressedThisFrame)
             {
                 hits.Play();
                 RestartGame();

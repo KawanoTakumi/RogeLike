@@ -8,8 +8,8 @@ public class CharacterStatus : ScriptableObject
     public int level = 1;//ƒŒƒxƒ‹
     public int maxHP = 1;//Å‘åHP
     public int HP = 1;//Œ»İ‚ÌHP
-    public int attack = 1;//UŒ‚—Í
-    public int diffence = 1;//–hŒä—Í
+    public int attack = 1;//Šî‘bUŒ‚—Í
+    public int diffence = 1;//Šî‘b–hŒä—Í
     public int attackRange = 1;//UŒ‚”ÍˆÍ
     public int level_exp = 0;//ƒŒƒxƒ‹ƒAƒbƒv‚É•K—v‚ÈŒoŒ±’l
     [Header("“Gê—p")]

@@ -21,4 +21,4 @@ MonoBehaviour:
   attackRange: 1
   level_exp: 0
   searchRange: 2
-  exp: 35
+  exp: 20

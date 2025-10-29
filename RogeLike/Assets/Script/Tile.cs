@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -24,7 +23,7 @@ public class Tile : MonoBehaviour
     public GameObject Exit_Obj;//階段
     public int mapSize = 40;
     public static int MAP_SIZE = 0;//マップの大きさ(縦横同比率)
-    public int roomCount = 4;//部屋の数
+    public int roomCount = 8;//部屋の数
     public int roomMinSize = 6;//部屋の最小の大きさ
     public int roomMaxSize = 12;//部屋の最大の大きさ
 
@@ -34,6 +33,7 @@ public class Tile : MonoBehaviour
     public static int MAX_FLOOR = 5;
     public static bool Boss_Flag = false;
     Room selectRoom;
+    public MiniMapGenerator maping;
     void Start()
     {
         //マップタイル設定(ワールドマップからダンジョンに入ったら設定)
@@ -72,8 +72,10 @@ public class Tile : MonoBehaviour
         DrawWalls();
         //階段タイル生成
         ExitTileGenerate();
-
-        
+        //ミニマップ生成
+        maping = GameObject.Find("Grid").GetComponent<MiniMapGenerator>();
+        maping.player = GameObject.Find("Player(Clone)").transform;
+        maping.GenerateMiniMap();
     }
     //カメラの位置にプレイヤーを生成
     public void CameraToPlayer()
@@ -198,7 +200,8 @@ public class Tile : MonoBehaviour
     {
         foreach (Room room in rooms)
         {
-            for (int i = 0; i < 3; i++) // 各部屋に3体出現
+            int max_rooms_enemy = UnityEngine.Random.Range(0,5);
+            for (int i = 0; i < max_rooms_enemy; i++) // 各部屋に3体出現
             {
                 // ランダムな敵種類を選択
                 int enemyIndex = UnityEngine.Random.Range(0, enemyPrefab.Length);

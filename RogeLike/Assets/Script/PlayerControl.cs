@@ -6,8 +6,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
+
+
 public class PlayerControl : MonoBehaviour
 {
+
     public float moveCooldown = 0.2f;
     public GameObject AttackEffect;//攻撃モーション
     public GameObject HealEffect;//回復モーション
@@ -117,8 +120,9 @@ public class PlayerControl : MonoBehaviour
             //攻撃
             if (Keyboard.current.spaceKey.wasPressedThisFrame && currentTarget != null)
             {
-
                 int damage = Mathf.Max(p_status.attack - currentTarget.EnemyStatus.diffence, 1);
+
+
                 //攻撃アニメーションを生成
                 if (AttackEffect != null)
                     Instantiate(AttackEffect, currentTarget.transform.position, Quaternion.identity);
@@ -289,6 +293,12 @@ public class PlayerControl : MonoBehaviour
                     p_status.diffence += 3;
                     Log.ShowMessage($" プレイヤーの防御力が３増加");
                 } break;
+            case 3:
+                {
+                    p_status.maxHP += 10;
+                    Log.ShowMessage($"秘伝の書で最大体力が10増加");
+                }
+                break;
         }
     }
 
@@ -304,7 +314,7 @@ public class PlayerControl : MonoBehaviour
         //ステータスを増加させる
         p_status.attack     += 2;
         p_status.diffence   += 1;
-        p_status.maxHP      += 5;
+        p_status.maxHP      += 2;
         p_status.HP = p_status.maxHP;
 
         //表示を設定

@@ -13,6 +13,7 @@ public class Enemys : MonoBehaviour
     public TextMeshProUGUI Levels;//レベル表示
     public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
     public CharacterStatus EnemyStatus;//個別ステータスに置きかえ
+    public GameObject HPBook = null;//ボスドロップ用
 
     private AudioSource AttckSE;
     private Transform player;
@@ -143,7 +144,12 @@ public class Enemys : MonoBehaviour
         Log.ShowMessage($"{EnemyStatus.charaName}を倒した！");
         //ボスなら
         if (EnemyStatus.name.Contains("Boss"))
+        {
             Exit.Boss_Flag = false;
+            if(HPBook)
+            Instantiate(HPBook, this.transform.position, this.transform.rotation);
+        }
+            
         Tile.allEnemys.Remove(this); // リストから削除
         p_control = Player.GetComponent<PlayerControl>();
         p_control.Exp_gain(EnemyStatus.exp);//プレイヤーに経験値を入れる
@@ -194,8 +200,8 @@ public class Enemys : MonoBehaviour
         //ステータス設定
         EnemyStatus.level = set_level;
         EnemyStatus.exp += EnemyStatus.level+5;
-        EnemyStatus.maxHP += EnemyStatus.level * 3;
-        EnemyStatus.attack += EnemyStatus.level * 2;
+        EnemyStatus.maxHP += EnemyStatus.level+5;
+        EnemyStatus.attack += EnemyStatus.level;
         Levels.text = EnemyStatus.level.ToString();
         //防御力はレベルが5以上の場合増加させる
         if(set_level > 5)

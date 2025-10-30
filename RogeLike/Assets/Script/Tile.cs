@@ -68,7 +68,7 @@ public class Tile : MonoBehaviour
             CameraToPlayer();
             Boss_Flag = true;
         }
-        //•Ç‚ğ¶¬
+
         DrawWalls();
         //ŠK’iƒ^ƒCƒ‹¶¬
         ExitTileGenerate();

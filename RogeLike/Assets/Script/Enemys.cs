@@ -14,6 +14,7 @@ public class Enemys : MonoBehaviour
     public bool Enemy_Moving = false;//プレイヤー側で変更するのでpublic
     public CharacterStatus EnemyStatus;//個別ステータスに置きかえ
     public GameObject HPBook = null;//ボスドロップ用
+    public GameObject AttackEffect = null;
 
     private AudioSource AttckSE;
     private Transform player;
@@ -162,8 +163,12 @@ public class Enemys : MonoBehaviour
         PlayerControl.p_status.HP -= damage;
         PlayerControl.p_status.HP = Mathf.Max(PlayerControl.p_status.HP, 0);
         p_control.UpdateHPValue();
+        //ログ更新
         if (Log != null)
         Log.ShowMessage($" プレイヤーは{damage}ダメージくらった");
+        //エフェクト発生
+        if (AttackEffect != null)
+            Instantiate(AttackEffect, Player.transform.position, Player.transform.rotation);
         //攻撃のBGMを再生
         if(AttckSE != null)
         {

@@ -469,3 +469,4 @@ MonoBehaviour:
   Enemy_Moving: 0
   EnemyStatus: {fileID: 0}
   HPBook: {fileID: 567491971825371927, guid: d1dda51ccfafeef4a8635b21b47d339a, type: 3}
+  AttackEffect: {fileID: 5359096105282496390, guid: 4edffb8a68e3f9f4aa67765ee0d8e2c1, type: 3}

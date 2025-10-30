@@ -110,6 +110,8 @@ MonoBehaviour:
   Levels: {fileID: 5708507864128252920}
   Enemy_Moving: 0
   EnemyStatus: {fileID: 0}
+  HPBook: {fileID: 0}
+  AttackEffect: {fileID: 5359096105282496390, guid: 4edffb8a68e3f9f4aa67765ee0d8e2c1, type: 3}
 --- !u!61 &5399404089735303096
 BoxCollider2D:
   m_ObjectHideFlags: 0

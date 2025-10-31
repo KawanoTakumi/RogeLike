@@ -10,8 +10,7 @@ using UnityEngine.UI;
 
 public class PlayerControl : MonoBehaviour
 {
-
-    public float moveCooldown = 0.2f;
+    public float moveCooldown = 0.01f;
     public GameObject AttackEffect;//攻撃モーション
     public GameObject HealEffect;//回復モーション
     private float lastMoveTime;
@@ -28,9 +27,10 @@ public class PlayerControl : MonoBehaviour
     private int currentTargetIndex = 0;
     private Enemys currentTarget = null;
     private BattleLog Log;
-    private Text HP_Text;//体力表示
+    private TextMeshProUGUI HP_Text;//体力表示
     private TextMeshProUGUI level_text;//レベル表示
     private TextMeshProUGUI heal_text;//薬草の個数
+    private TextMeshProUGUI Name;
     public static int max_exp = 5;
     public static int heal_count = 0;//回復可能回数
     void Awake()
@@ -40,6 +40,9 @@ public class PlayerControl : MonoBehaviour
 
     private void Start()
     {
+        Name = GameObject.Find("PlayerName").GetComponent<TextMeshProUGUI>();
+        if (Name != null)
+            Name.text = InputName.OutputName;
         inputActions.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         p_status = Instantiate(PlayerStatus);
         //リセットフラグがtrueならプレイヤーのレベルをリセットする
@@ -55,7 +58,7 @@ public class PlayerControl : MonoBehaviour
         Player_Moving = true;
         //体力表示用オブジェクト読み込み
         PlayerHPBar = GameObject.Find("HP").GetComponent<Slider>();
-        HP_Text = GameObject.Find("HP_Text").GetComponent<Text>();
+        HP_Text = GameObject.Find("HP_Text").GetComponent<TextMeshProUGUI>();
         p_status.HP = p_status.maxHP;
         PlayerHPBar.maxValue = p_status.maxHP;
         PlayerHPBar.value = p_status.HP;
@@ -207,7 +210,7 @@ public class PlayerControl : MonoBehaviour
     //移動できるタイルを設定
     bool IsWalkableTile(TileBase tile)
     {
-        return tile.name == Tile.FTILENAME.name|| tile.name == "Exit_0";
+        return tile.name == Tile.FTILENAME.name|| tile.name == "Exit";
     }
     //周辺にいる敵を検知
     private void UpdateNearbyEnemies(int range)
@@ -236,7 +239,7 @@ public class PlayerControl : MonoBehaviour
             enemy.GetComponent<SpriteRenderer>().color = Color.white;
         }
 
-        target.GetComponent<SpriteRenderer>().color = Color.red;
+        target.GetComponent<SpriteRenderer>().color = Color.orangeRed;
     }
     //プレイヤーの体力表示更新
     public void UpdateHPValue()
@@ -295,8 +298,16 @@ public class PlayerControl : MonoBehaviour
                 } break;
             case 3:
                 {
-                    p_status.maxHP += 10;
-                    Log.ShowMessage($"秘伝の書で最大体力が10増加");
+                    if(p_status.attackRange < 3)
+                    {
+                        p_status.attackRange++;
+                        Log.ShowMessage($"秘伝の書で攻撃範囲が1増加");
+                    }
+                    else
+                    {
+                        p_status.maxHP += 3;
+                        Log.ShowMessage($"秘伝の書で最大体力が3増加");
+                    }
                 }
                 break;
         }
@@ -309,27 +320,21 @@ public class PlayerControl : MonoBehaviour
         p_status.level++;
         Log.ShowMessage($"レベル{p_status.level}にレベルアップ！");
         p_status.level_exp = 0;
-        max_exp = p_status.level *20;
+        max_exp = p_status.level *35;
 
         //ステータスを増加させる
         p_status.attack     += 2;
         p_status.diffence   += 1;
         p_status.maxHP      += 2;
-        p_status.HP = p_status.maxHP;
+
+        if(p_status.HP < p_status.maxHP / 2)
+        p_status.HP = p_status.maxHP /2;
 
         //表示を設定
         PlayerHPBar.maxValue = p_status.maxHP;
         PlayerHPBar.value = p_status.HP;
 
-        //レベルが３以上なら攻撃範囲を+１する
-        if (p_status.level > 3)
-        {
-            p_status.attackRange = 2;
-        }
-        else
-        {
-            p_status.attackRange = 1;
-        }
+
             //レベルを保存
             Grobal_Player_Level = p_status.level;
     }

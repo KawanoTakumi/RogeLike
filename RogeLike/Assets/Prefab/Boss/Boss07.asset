@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34f2548d41ffa5a4e85934e5dcd08c23, type: 3}
-  m_Name: Enemy05
+  m_Name: Boss07
   m_EditorClassIdentifier: 
-  charaName: RedRhizard
+  charaName: DarkElement
   level: 1
-  maxHP: 20
-  HP: 20
-  attack: 4
-  diffence: 2
+  maxHP: 75
+  HP: 75
+  attack: 3
+  diffence: 4
   attackRange: 1
   level_exp: 0
-  searchRange: 2
-  exp: 20
+  searchRange: 4
+  exp: 120

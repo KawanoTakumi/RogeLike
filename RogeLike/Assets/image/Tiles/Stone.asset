@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Exit_0
+  m_Name: Stone
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -1922979618149193216, guid: 167ba7886d02f784da5df1102d69f909, type: 3}
+  m_Sprite: {fileID: -1229107819358061469, guid: d638ed33d5b97f946b47a9c342b77b10, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

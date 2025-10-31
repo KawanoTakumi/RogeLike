@@ -4,16 +4,21 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 public class Tile : MonoBehaviour
 {
     public Tilemap tilemap;//タイルマップ
+    //背景
+    public Sprite[] Back_Sprite;
+    public Image BackImage;
+    public static int back_sprite_number;
     //床タイル
     public TileBase[] floorTile;
-    private int ftile_number;
+    public static int ftile_number;
     public static TileBase FTILENAME;
     //壁タイル
     public TileBase[] wallTile;
-    private int wtile_number;
+    public static int wtile_number;
 
     public TileBase stairsTile;//階段タイル
     public GameObject playerPrefab;//プレイヤー
@@ -92,13 +97,28 @@ public class Tile : MonoBehaviour
         //初回時のみ設定
         if(Exit.Now_Floor == 1)
         {
+           
             ftile_number = UnityEngine.Random.Range(0, floorTile.Count()-1);
-            wtile_number = UnityEngine.Random.Range(0, 1);
+            wtile_number = UnityEngine.Random.Range(0, wallTile.Count()-1);
+
+            switch (wtile_number)
+            {
+                case 0: case 1: back_sprite_number = 0;
+                    break;
+                case 2: case 3: back_sprite_number = 1;
+                    break;
+                case 4: back_sprite_number = 2;
+                    break;
+                case 5: back_sprite_number = 3;
+                    break;
+            }
+
             MAX_FLOOR = UnityEngine.Random.Range(3, 4 + Exit.Clear_Dungeon);//クリア回数が多ければ階層を増やす
             //8以上は無し
             if (MAX_FLOOR > 6)
                 MAX_FLOOR = 6;
         }
+        BackImage.sprite = Back_Sprite[back_sprite_number];
         FTILENAME = floorTile[ftile_number];
     }
 

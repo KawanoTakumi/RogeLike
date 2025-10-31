@@ -51,17 +51,19 @@ public class GameState : MonoBehaviour
             }
 
 
-
-            if(Keyboard.current.spaceKey.wasPressedThisFrame)
+            if(!InputName.Rename_flag)
             {
-                Start_Flag = true;
-                hits.Play();
-                StartGame();
-            }
-            if(Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                hits.Play();
-                Exit_game();
+                if (Keyboard.current.spaceKey.wasPressedThisFrame)
+                {
+                    Start_Flag = true;
+                    hits.Play();
+                    StartGame();
+                }
+                if (Keyboard.current.escapeKey.wasPressedThisFrame)
+                {
+                    hits.Play();
+                    Exit_game();
+                }
             }
         }
         //ÉQÅ[ÉÄì‡

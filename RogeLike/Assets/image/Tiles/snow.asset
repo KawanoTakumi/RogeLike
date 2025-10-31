@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Tile 001_0
+  m_Name: snow
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -1229107819358061469, guid: d638ed33d5b97f946b47a9c342b77b10, type: 3}
+  m_Sprite: {fileID: 5251734906795025119, guid: 99db12c894d77004e89b711fddfd8a85, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

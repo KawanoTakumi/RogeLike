@@ -104,6 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveCooldown: 0.2
   AttackEffect: {fileID: 5066433372755216518, guid: f2033618befd979418b8a512025c86d8, type: 3}
+  HealEffect: {fileID: 7846787603527932744, guid: a1278c44d28b61447b372caa716708f3, type: 3}
   PlayerStatus: {fileID: 11400000, guid: b7ee9f5347014ef40a4b6839fc5d92e1, type: 2}
 --- !u!61 &212371293164382178
 BoxCollider2D:

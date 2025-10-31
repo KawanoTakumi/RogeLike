@@ -16,7 +16,7 @@ MonoBehaviour:
   level: 1
   maxHP: 14
   HP: 4
-  attack: 7
+  attack: 3
   diffence: 1
   attackRange: 1
   level_exp: 0

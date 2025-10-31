@@ -300,13 +300,13 @@ public class PlayerControl : MonoBehaviour
                 {
                     if(p_status.attackRange < 3)
                     {
-                        p_status.attackRange++;
+                        p_status.attackRange+=1;
                         Log.ShowMessage($"”é“`‚Ì‘‚ÅUŒ‚”ÍˆÍ‚ª1‘‰Á");
                     }
                     else
                     {
-                        p_status.maxHP += 3;
-                        Log.ShowMessage($"”é“`‚Ì‘‚ÅÅ‘å‘Ì—Í‚ª3‘‰Á");
+                        p_status.maxHP += 5;
+                        Log.ShowMessage($"”é“`‚Ì‘‚ÅÅ‘å‘Ì—Í‚ª5‘‰Á");
                     }
                 }
                 break;
@@ -323,9 +323,13 @@ public class PlayerControl : MonoBehaviour
         max_exp = p_status.level *35;
 
         //ƒXƒe[ƒ^ƒX‚ð‘‰Á‚³‚¹‚é
-        p_status.attack     += 2;
-        p_status.diffence   += 1;
-        p_status.maxHP      += 2;
+
+        if(p_status.level % 2 == 0)
+        {
+            p_status.attack += 2;
+            p_status.diffence += 2;
+        }
+        p_status.maxHP      += 3;
 
         if(p_status.HP < p_status.maxHP / 2)
         p_status.HP = p_status.maxHP /2;
@@ -346,6 +350,7 @@ public class PlayerControl : MonoBehaviour
         PlayerStatus.HP = PlayerStatus.maxHP;
         PlayerStatus.attack = 5;
         PlayerStatus.diffence = 5;
+        PlayerStatus.attackRange = 1;
         PlayerStatus.searchRange = 1;
         PlayerStatus.level_exp = 0;
         max_exp = PlayerStatus.level *15;

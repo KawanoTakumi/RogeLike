@@ -10,6 +10,7 @@ public class InputName : MonoBehaviour
     public TextMeshProUGUI View_name;
     public TMP_InputField name_field;
     public GameObject IMP_Obj;
+    public TextMeshProUGUI name_guide;
 
     public static string OutputName;
     public static bool Rename_flag = false;
@@ -17,6 +18,7 @@ public class InputName : MonoBehaviour
     void Start()
     {
         View_name.text = OutputName;
+        name_guide.text = "N : Rename";
         IMP_Obj.SetActive(false);
     }
 
@@ -39,16 +41,17 @@ public class InputName : MonoBehaviour
             {
                 Rename_flag = true;
                 StartCoroutine(FocusInputFieldNextFrame());
-
+                name_guide.text = "LeftShift : Apply";
             }
         }
 
-        if (Rename_flag && Keyboard.current.enterKey.wasPressedThisFrame)
+        if (Rename_flag && Keyboard.current.leftShiftKey.wasPressedThisFrame)
         {
             //ñºëOÇçXêV
             EventSystem.current.SetSelectedGameObject(null);
             Rename_flag = false;
             OutputName = name_field.text;
+            name_guide.text = "N : Rename";
         }
         IMP_Obj.SetActive(Rename_flag);
 

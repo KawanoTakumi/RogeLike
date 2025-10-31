@@ -100,7 +100,7 @@ public class Enemys : MonoBehaviour
         if (dx <= 1 && dy <= 1)
         {
             AttackPlayer();
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForSeconds(0f);
             yield break; // 攻撃したら移動しない
         }
 
@@ -116,7 +116,7 @@ public class Enemys : MonoBehaviour
             Vector3Int otherCell = tilemaps.WorldToCell(other.transform.position);
             if (otherCell == targetCell)
             {
-                yield return new WaitForSeconds(0.001f);
+                yield return new WaitForSeconds(0);
                 yield break;
             }
         }
@@ -126,7 +126,7 @@ public class Enemys : MonoBehaviour
             Vector3 targetWorld = tilemaps.CellToWorld(targetCell) + new Vector3(0.5f, 0.5f, 0);
             transform.position = targetWorld;
         }
-        yield return new WaitForSeconds(0.001f); // 演出用の待機
+        yield return new WaitForSeconds(0); // 演出用の待機
     }
 
     public void TakeDamage(int damage)
@@ -200,13 +200,13 @@ public class Enemys : MonoBehaviour
         set_level += Exit.Clear_Dungeon;//クリア階数分レベルを上げる
         if (gameObject.name.Contains("Boss"))
         {
-            set_level += 3;//ボスは3レベル上げる
+            set_level += 4;//ボスは4レベル上げる
         }
         //ステータス設定
         EnemyStatus.level = set_level;
-        EnemyStatus.exp += EnemyStatus.level+5;
+        EnemyStatus.exp += EnemyStatus.level;
         EnemyStatus.maxHP += EnemyStatus.level*2;
-        EnemyStatus.attack += EnemyStatus.level;
+        EnemyStatus.attack += EnemyStatus.level*2;
         Levels.text = EnemyStatus.level.ToString();
         //防御力はレベルが5以上の場合増加させる
         if(set_level > 5)

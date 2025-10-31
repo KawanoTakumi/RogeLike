@@ -18,7 +18,7 @@ MonoBehaviour:
   HP: 110
   attack: 9
   diffence: 7
-  attackRange: 2
+  attackRange: 1
   level_exp: 37
   searchRange: 1
   exp: 0
